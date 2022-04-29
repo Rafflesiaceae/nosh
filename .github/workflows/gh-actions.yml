@@ -19,6 +19,7 @@ jobs: # {{{
           - macos-10.15
           - macos-latest
           - windows-2016
+          - windows-2019
           - windows-latest
 
     runs-on: ${{ matrix.os }}
