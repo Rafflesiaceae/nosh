@@ -15,9 +15,9 @@ jobs: # {{{
     strategy:
       matrix:
         os:
-          - { id: ubuntu-latest , bin_ext: "" }
-          - { id: macos-latest  , bin_ext: "" }
-          - { id: macos-latest  , bin_ext: ".exe" }
+          - { id: ubuntu-latest  , bin_ext: "" }
+          - { id: macos-latest   , bin_ext: "" }
+          - { id: windows-latest , bin_ext: ".exe" }
 
     runs-on: ${{ matrix.os.id }}
 
