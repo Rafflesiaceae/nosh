@@ -6,8 +6,7 @@ on:
   pull_request:
     branches: [ main, gh-actions ]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
 
 jobs: # {{{
   build-and-quicktest: # {{{
@@ -15,11 +14,14 @@ jobs: # {{{
     strategy:
       matrix:
         os:
-          - { id: ubuntu-latest  , bin_ext: "" }
-          - { id: macos-latest   , bin_ext: "" }
-          - { id: windows-latest , bin_ext: ".exe" }
+          - ubuntu-18.04
+          - ubuntu-latest
+          - macos-10.15
+          - macos-latest
+          - windows-2016
+          - windows-latest
 
-    runs-on: ${{ matrix.os.id }}
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v3
@@ -28,6 +30,6 @@ jobs: # {{{
         run: go build
 
       - name: Run a quicktest
-        run: ./nosh${{ matrix.os.bin_ext }} quicktest.star
+        run: ./nosh quicktest.star
   # }}}
 # }}}
