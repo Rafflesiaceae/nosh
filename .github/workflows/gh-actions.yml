@@ -9,15 +9,17 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-jobs:
-
-  build-and-test:
+jobs: # {{{
+  build-and-quicktest: # {{{
 
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        os:
+          - { id: ubuntu-latest , bin_ext: "" }
+          - { id: macos-latest  , bin_ext: "" }
+          - { id: macos-latest  , bin_ext: ".exe" }
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os.id }}
 
     steps:
       - uses: actions/checkout@v3
@@ -26,5 +28,6 @@ jobs:
         run: go build
 
       - name: Run a quicktest
-        run: ./nosh quicktest.star
-
+        run: ./nosh${{ matrix.os.bin_ext }} quicktest.star
+  # }}}
+# }}}
