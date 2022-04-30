@@ -11,6 +11,7 @@ var Module = &starlarkstruct.Module{
 	Name: "os",
 	Members: starlark.StringDict{
 		"sleep": starlark.NewBuiltin("os.sleep", sleep),
+		"distro":     starlark.NewBuiltin("os.distro", distro),
 	},
 }
 
