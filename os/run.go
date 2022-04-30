@@ -152,7 +152,7 @@ func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 
 	// Run command
 	if debug {
-		fmt.Fprintf(os.Stderr, "+ %s", cmd.String())
+		fmt.Fprintf(os.Stderr, "+ %s\n", cmd.String())
 	}
 	err = cmd.Run()
 
