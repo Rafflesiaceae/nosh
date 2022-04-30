@@ -23,6 +23,11 @@ func usage(retCode int) {
 	os.Exit(retCode)
 }
 
+func version() {
+	fmt.Print("0.0.1")
+	os.Exit(0)
+}
+
 func run(scriptPath string) {
 
 	resolve.AllowGlobalReassign = true
@@ -55,9 +60,12 @@ func main() {
 		usage(1)
 	}
 
-	if args[0] == "-h" || args[0] == "--help" {
+	switch args[0] {
+	case "-h", "--help":
 		usage(0)
+	case "-v", "--version":
+		version()
+	default:
+		run(args[0])
 	}
-
-	run(args[0])
 }
