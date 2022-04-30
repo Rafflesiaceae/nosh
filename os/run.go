@@ -82,6 +82,7 @@ func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 	var runArgs []string
 	var check starlark.Bool = true
 	var capture = runCaptureDefault
+	var debug = false
 
 	var captureStderr, captureStdout bool
 	var devNullStderr, devNullStdout bool
@@ -102,7 +103,7 @@ func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 		runArgs = append(runArgs, val)
 	}
 
-	if err := internal.UnpackKwargs("run", args, kwargs, "check?", &check, "capture?", &capture); err != nil {
+	if err := internal.UnpackKwargs("run", args, kwargs, "check?", &check, "capture?", &capture, "debug?", &debug); err != nil {
 		return nil, err
 	}
 
@@ -150,6 +151,9 @@ func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 	}
 
 	// Run command
+	if debug {
+		fmt.Fprintf(os.Stderr, "+ %s", cmd.String())
+	}
 	err = cmd.Run()
 
 	// Gather command results
