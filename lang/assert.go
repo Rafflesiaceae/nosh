@@ -14,8 +14,12 @@ func Assert(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, 
 	var x, y starlark.Comparable
 	var xfail starlark.Bool
 
-	if err := starlark.UnpackArgs("assert", args, kwargs, "x", &x, "y", &y, "xfail?", &xfail); err != nil {
+	if err := starlark.UnpackArgs("assert", args, kwargs, "x", &x, "y?", &y, "xfail?", &xfail); err != nil {
 		return nil, err
+	}
+
+	if y == nil {
+		y = starlark.True
 	}
 
 	truth, err := x.CompareSameType(syntax.EQL, y, 1)
