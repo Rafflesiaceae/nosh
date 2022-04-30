@@ -56,10 +56,12 @@ func run(scriptPath string, src interface{}) {
 
 	switch err := err.(type) {
 	case *starlark.EvalError:
-		fmt.Fprintf(os.Stderr, "%s", err.Backtrace())
+		fmt.Fprintf(os.Stderr, "%s\n", err.Backtrace())
+		os.Exit(1)
 	case nil: // success
 	default:
-		fmt.Fprintf(os.Stderr, "ExecFile failed with %v, wanted *EvalError", err)
+		fmt.Fprintf(os.Stderr, "Error in %v\n", err)
+		os.Exit(1)
 	}
 }
 
