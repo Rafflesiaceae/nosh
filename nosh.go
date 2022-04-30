@@ -38,10 +38,12 @@ func run(scriptPath string) {
 	// Builtins
 	predeclared := starlark.StringDict{
 		"assert": starlark.NewBuiltin("assert", lang.Assert),
+		"exit":   noshos.ModuleExit,
 		"fs":     fs.Module,
 		"json":   json.Module,
 		"math":   math.Module,
 		"os":     noshos.Module,
+		"quit":   noshos.ModuleQuit,
 	}
 
 	// Execute Starlark program in a file.
