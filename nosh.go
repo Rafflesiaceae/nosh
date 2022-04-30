@@ -49,10 +49,14 @@ func run(scriptPath string) {
 	// Execute Starlark program in a file.
 	thread := &starlark.Thread{Name: "nosh"}
 	_, err := starlark.ExecFile(thread, scriptPath, nil, predeclared)
-	if err != nil {
-		panic(err)
-	}
 
+	switch err := err.(type) {
+	case *starlark.EvalError:
+		fmt.Fprintf(os.Stderr, "%s", err.Backtrace())
+	case nil: // success
+	default:
+		fmt.Fprintf(os.Stderr, "ExecFile failed with %v, wanted *EvalError", err)
+	}
 }
 
 func main() {
