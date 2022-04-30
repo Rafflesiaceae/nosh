@@ -29,3 +29,8 @@ setenv("nosh_test_env", "nosh_test_env_has_content")
 assert("nosh_test_env=nosh_test_env_has_content" in getenv())
 assert(getenv("nosh_test_env"),  "nosh_test_env_has_content")
 assert(expand("$nosh_test_env"), "nosh_test_env_has_content")
+
+# test os.run & expand
+res = run(os.executable(), "-c", 'print(expand("$nosh_test_env"))', env=["nosh_test_env=nosh_test_env_has_content"])
+assert(res.stderr, "nosh_test_env_has_content\n") # @TODO `print` should not write to stderr but stdout by default
+assert(res.exitCode, 0)

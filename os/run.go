@@ -83,6 +83,7 @@ func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 	var check starlark.Bool = true
 	var capture = runCaptureDefault
 	var debug = false
+	var env *starlark.List
 
 	var captureStderr, captureStdout bool
 	var devNullStderr, devNullStdout bool
@@ -103,7 +104,7 @@ func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 		runArgs = append(runArgs, val)
 	}
 
-	if err := internal.UnpackKwargs("run", args, kwargs, "check?", &check, "capture?", &capture, "debug?", &debug); err != nil {
+	if err := internal.UnpackKwargs("run", args, kwargs, "check?", &check, "capture?", &capture, "debug?", &debug, "env?", &env); err != nil {
 		return nil, err
 	}
 
@@ -148,6 +149,23 @@ func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 		cmd.Stderr = io.Discard
 	} else {
 		cmd.Stderr = os.Stderr
+	}
+
+	if env != nil {
+		result := make([]string, 0)
+		result = append(result, os.Environ()...)
+
+		iter := env.Iterate()
+		defer iter.Done()
+
+		var el starlark.Value
+		for iter.Next(&el) {
+			if str, ok := el.(starlark.String); ok {
+				result = append(result, str.GoString())
+			}
+		}
+
+		cmd.Env = result
 	}
 
 	// Run command
