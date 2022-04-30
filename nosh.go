@@ -19,7 +19,7 @@ func usage(retCode int) {
 		f = os.Stdout
 	}
 
-	fmt.Fprintln(f, "usage: <script>")
+	fmt.Fprintln(f, "usage: -c <cmd> | <script>")
 	os.Exit(retCode)
 }
 
@@ -28,7 +28,7 @@ func version() {
 	os.Exit(0)
 }
 
-func run(scriptPath string) {
+func run(scriptPath string, src interface{}) {
 
 	resolve.AllowGlobalReassign = true
 	resolve.AllowRecursion = true
@@ -52,7 +52,7 @@ func run(scriptPath string) {
 
 	// Execute Starlark program in a file.
 	thread := &starlark.Thread{Name: "nosh"}
-	_, err := starlark.ExecFile(thread, scriptPath, nil, predeclared)
+	_, err := starlark.ExecFile(thread, scriptPath, src, predeclared)
 
 	switch err := err.(type) {
 	case *starlark.EvalError:
@@ -66,16 +66,18 @@ func run(scriptPath string) {
 func main() {
 	// "Cli"
 	args := os.Args[1:]
-	if len(args) != 1 {
+	if len(args) < 1 {
 		usage(1)
 	}
 
 	switch args[0] {
+	case "-c":
+		run("-c", args[1])
 	case "-h", "--help":
 		usage(0)
 	case "-v", "--version":
 		version()
 	default:
-		run(args[0])
+		run(args[0], nil)
 	}
 }
