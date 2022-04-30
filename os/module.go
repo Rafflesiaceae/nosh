@@ -14,10 +14,24 @@ var Module = &starlarkstruct.Module{
 	Name: "os",
 	Members: starlark.StringDict{
 		"distro":     starlark.NewBuiltin("os.distro", distro),
+		"executable": starlark.NewBuiltin("os.executable", executable),
 		"exit":       ModuleExit,
 		"quit":       ModuleQuit,
 		"sleep":      starlark.NewBuiltin("os.sleep", sleep),
 	},
+}
+
+func executable(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	if err := starlark.UnpackArgs("executable", args, kwargs); err != nil {
+		return nil, err
+	}
+
+	result, err := os.Executable()
+	if err != nil {
+		return nil, err
+	}
+
+	return starlark.String(result), nil
 }
 
 func quit(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
