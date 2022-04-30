@@ -3,12 +3,14 @@ package os
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"nosh/internal"
 	"os"
 	"os/exec"
 
 	"go.starlark.net/starlark"
 	strlk "go.starlark.net/starlark"
+	"go.starlark.net/syntax"
 )
 
 type RunResult struct { // {{{
@@ -46,18 +48,20 @@ func (fe *RunResult) AttrNames() []string {
 
 var (
 	runCaptureDefault *starlark.List
-	runCaptureStdout  starlark.String
 	runCaptureStderr  starlark.String
+	runCaptureStdout  starlark.String
+	// @XXX @TODO capture != redirection, this needs to be a different concept
+	runCaptureStdoutDevNull starlark.String
+	runCaptureStderrDevNull starlark.String
 )
 
 func init() {
 	var err error
 
-	// init runCaptureStdout
-	runCaptureStdout = starlark.String("stdout")
-
-	// init runCaptureStderr
 	runCaptureStderr = starlark.String("stderr")
+	runCaptureStderrDevNull = starlark.String("stderr->devnull")
+	runCaptureStdout = starlark.String("stdout")
+	runCaptureStdoutDevNull = starlark.String("stdout->devnull")
 
 	// init runCaptureDefault
 	runCaptureDefault = &starlark.List{}
@@ -78,7 +82,9 @@ func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 	var runArgs []string
 	var check starlark.Bool = true
 	var capture = runCaptureDefault
-	var captureStdout, captureStderr bool
+
+	var captureStderr, captureStdout bool
+	var devNullStderr, devNullStdout bool
 
 	// Unpack args
 	for _, arg := range args {
@@ -100,11 +106,28 @@ func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 		return nil, err
 	}
 
-	if internal.Contains(capture, runCaptureStdout) {
-		captureStdout = true
-	}
-	if internal.Contains(capture, runCaptureStderr) {
-		captureStderr = true
+	{ // parse capture
+		iter := capture.Iterate()
+		defer iter.Done()
+
+		var el starlark.Value
+		for iter.Next(&el) {
+
+			if cmp, err := starlark.Compare(syntax.EQL, el, runCaptureStderr); err == nil && cmp == true {
+				captureStderr = true
+			}
+			if cmp, err := starlark.Compare(syntax.EQL, el, runCaptureStderrDevNull); err == nil && cmp == true {
+				captureStderr = false
+				devNullStderr = true
+			}
+			if cmp, err := starlark.Compare(syntax.EQL, el, runCaptureStdout); err == nil && cmp == true {
+				captureStdout = true
+			}
+			if cmp, err := starlark.Compare(syntax.EQL, el, runCaptureStdoutDevNull); err == nil && cmp == true {
+				captureStdout = false
+				devNullStdout = true
+			}
+		}
 	}
 
 	// Setup command
@@ -113,11 +136,15 @@ func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 	var stdoutBuf, stderrBuf bytes.Buffer
 	if captureStdout {
 		cmd.Stdout = &stdoutBuf
+	} else if devNullStdout {
+		cmd.Stdout = io.Discard
 	} else {
 		cmd.Stdout = os.Stdout
 	}
 	if captureStderr {
 		cmd.Stderr = &stderrBuf
+	} else if devNullStderr {
+		cmd.Stderr = io.Discard
 	} else {
 		cmd.Stderr = os.Stderr
 	}
