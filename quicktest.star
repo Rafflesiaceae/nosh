@@ -5,6 +5,10 @@
 assert(7+1, 8)
 assert(1, 2, xfail=True)
 
+# test starlark features
+## @XXX f"...{foo}..." formatting strings don't work yet
+assert("{}".format("qwe"), "qwe")
+
 # test fs.find
 found_count = 0
 for x in fs.find("."):
