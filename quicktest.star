@@ -23,3 +23,9 @@ assert(res.exitCode, 0)
 res = run(os.executable(), "--version", capture=["stdout->devnull"])
 assert(res.stdout, "0.0.1", xfail=True)
 assert(res.exitCode, 0)
+
+# test setenv/getenv/expand
+setenv("nosh_test_env", "nosh_test_env_has_content")
+assert("nosh_test_env=nosh_test_env_has_content" in getenv())
+assert(getenv("nosh_test_env"),  "nosh_test_env_has_content")
+assert(expand("$nosh_test_env"), "nosh_test_env_has_content")

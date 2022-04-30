@@ -39,10 +39,13 @@ func run(scriptPath string) {
 	predeclared := starlark.StringDict{
 		"assert": starlark.NewBuiltin("assert", lang.Assert),
 		"exit":   noshos.ModuleExit,
+		"expand": noshos.ModuleExpand,
 		"fs":     fs.Module,
 		"json":   json.Module,
 		"math":   math.Module,
 		"os":     noshos.Module,
+		"getenv": noshos.ModuleGetenv,
+		"setenv": noshos.ModuleSetenv,
 		"quit":   noshos.ModuleQuit,
 		"run":    noshos.ModuleRun,
 	}
