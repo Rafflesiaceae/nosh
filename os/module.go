@@ -18,6 +18,7 @@ var ModuleSetenv = starlark.NewBuiltin("os.setenv", setenv)
 var Module = &starlarkstruct.Module{
 	Name: "os",
 	Members: starlark.StringDict{
+		"args":       Args,
 		"distro":     starlark.NewBuiltin("os.distro", distro),
 		"executable": starlark.NewBuiltin("os.executable", executable),
 		"exit":       ModuleExit,

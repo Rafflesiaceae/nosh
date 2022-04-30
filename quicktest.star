@@ -1,3 +1,4 @@
+#!/usr/bin/env nosh
 # [RUN] ./cycle.sh
 
 # test assert
@@ -22,6 +23,10 @@ assert(res.exitCode, 0)
 
 res = run(os.executable(), "--version", capture=["stdout->devnull"])
 assert(res.stdout, "0.0.1", xfail=True)
+assert(res.exitCode, 0)
+
+res = run(os.executable(), "-c", 'print(args)', 'nosh_first_arg', 'nosh_second_arg')
+assert(res.stderr, '["nosh_first_arg", "nosh_second_arg"]\n')
 assert(res.exitCode, 0)
 
 # test setenv/getenv/expand

@@ -37,6 +37,7 @@ func run(scriptPath string, src interface{}) {
 
 	// Builtins
 	predeclared := starlark.StringDict{
+		"args":   noshos.Args,
 		"assert": starlark.NewBuiltin("assert", lang.Assert),
 		"exit":   noshos.ModuleExit,
 		"expand": noshos.ModuleExpand,
@@ -74,12 +75,21 @@ func main() {
 
 	switch args[0] {
 	case "-c":
+		if len(args) == 1 {
+			usage(1)
+		}
+		if len(args) > 2 {
+			noshos.SetArgs(args[2:])
+		}
 		run("-c", args[1])
 	case "-h", "--help":
 		usage(0)
 	case "-v", "--version":
 		version()
 	default:
+		if len(args) > 1 {
+			noshos.SetArgs(args[1:])
+		}
 		run(args[0], nil)
 	}
 }
