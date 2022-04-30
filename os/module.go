@@ -10,6 +10,8 @@ import (
 
 var ModuleExit = starlark.NewBuiltin("os.exit", quit)
 var ModuleQuit = starlark.NewBuiltin("os.quit", quit)
+var ModuleRun = starlark.NewBuiltin("os.run", run)
+
 var Module = &starlarkstruct.Module{
 	Name: "os",
 	Members: starlark.StringDict{
@@ -17,6 +19,7 @@ var Module = &starlarkstruct.Module{
 		"executable": starlark.NewBuiltin("os.executable", executable),
 		"exit":       ModuleExit,
 		"quit":       ModuleQuit,
+		"run":        ModuleRun,
 		"sleep":      starlark.NewBuiltin("os.sleep", sleep),
 	},
 }

@@ -44,6 +44,7 @@ func run(scriptPath string) {
 		"math":   math.Module,
 		"os":     noshos.Module,
 		"quit":   noshos.ModuleQuit,
+		"run":    noshos.ModuleRun,
 	}
 
 	// Execute Starlark program in a file.
