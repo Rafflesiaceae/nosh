@@ -23,23 +23,27 @@ put 'em together, what can go wrong?
 - [ ] hash
 - [ ] base64
 - [ ] templating
-- [ ] env
+- [X] getenv/setenv
+- [X] expand env
+    + [ ] also expand ~ tilde ?
 - [ ] PWD / cd
 - [X] sleep
 - [ ] dates
 - [ ] parallel
 - [ ] args
 - [ ] cli / argparse ?
+- [X] cli -c
 
-- [ ] os.exec
+- [X] os.run
+	+ [X] capture
+	+ [X] env
 	+ [ ] pipes
 	+ [ ] redirections
 	+ [ ] background
 	+ [ ] timeouts
-- [ ] os.distro/kind/os-type/uname
+- [X] os.distro/kind/os-type/uname
 - [ ] os.pkill <pid> <name-*>
 - [ ] os.https://nim-lang.org/docs/dynlib.html
-- [ ] os.expandTilde
 - [ ] os.getTempDir
 - [ ] os.sendSignal
 - [ ] os.registry (WIN-ONLY)
