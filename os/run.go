@@ -89,23 +89,12 @@ func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 	var captureStderr, captureStdout bool
 	var devNullStderr, devNullStdout bool
 
-	// Unpack args
-	for _, arg := range args {
-		// name, skipNone := paramName(pairs[2*i])
-		// if skipNone {
-		// 	if _, isNone := arg.(NoneType); isNone {
-		// 		continue
-		// 	}
-		// }
-		var val string
-		if err := internal.UnpackOneArg(arg, &val); err != nil {
-			// return nil, fmt.Errorf("%s: for parameter %s: %s", fnname, name, err)
-			return nil, fmt.Errorf("unpacking: %s", arg)
-		}
-		runArgs = append(runArgs, val)
+	runArgs, err = internal.UnpackPositionalVarargsString("run", args)
+	if err != nil {
+		return nil, err
 	}
 
-	if err := internal.UnpackKwargs("run", args, kwargs, "check?", &check, "capture?", &capture, "debug?", &debug, "env?", &env); err != nil {
+	if err := internal.UnpackKwargs("run", kwargs, "check?", &check, "capture?", &capture, "debug?", &debug, "env?", &env); err != nil {
 		return nil, err
 	}
 

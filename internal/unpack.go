@@ -106,7 +106,7 @@ func UnpackOneArg(v starlark.Value, ptr interface{}) error {
 }
 
 // UnpackKwargs copied from go.starlark.net@v0.0.0-20220328144851-d1966c6b9fcd/starlark/unpack.go:93:6
-func UnpackKwargs(fnname string, args starlark.Tuple, kwargs []starlark.Tuple, pairs ...interface{}) error {
+func UnpackKwargs(fnname string, kwargs []starlark.Tuple, pairs ...interface{}) error {
 	nparams := len(pairs) / 2
 	var defined intset
 	defined.init(nparams)
@@ -162,4 +162,45 @@ kwloop:
 	}
 
 	return nil
+}
+
+// UnpackPositionalVarargs unpacks all positional varargs and returns them,
+// pass an `argTypeBin` if you want to have runtime type-checking, pass
+// `starlark.None` if you don't want to force all varargs to a specific type
+func UnpackPositionalVarargs(fnname string, args starlark.Tuple, argTypeBin interface{}) (posargs []starlark.Value, err error) {
+	// @XXX @TODO use generics once they arrive
+	result := make([]starlark.Value, 0)
+
+	// Unpack positional args
+	for _, arg := range args {
+		if argTypeBin != starlark.None {
+			if err := UnpackOneArg(arg, &argTypeBin); err != nil {
+				return nil, fmt.Errorf("unpacking: %s", arg)
+			}
+		}
+		result = append(result, arg)
+	}
+
+	return result, nil
+}
+
+// UnpackPositionalVarargsString unpacks all positional varargs and returns them,
+// pass an `argTypeBin` if you want to have runtime type-checking, pass
+// `starlark.None` if you don't want to force all varargs to a specific type
+func UnpackPositionalVarargsString(fnname string, args starlark.Tuple) (posargs []string, err error) {
+	result := make([]string, 0)
+
+	// Unpack positional args
+	for _, arg := range args {
+		{
+			// On failure, don't clobber *ptr.
+			s, ok := starlark.AsString(arg)
+			if !ok {
+				return nil, fmt.Errorf("got %s, want string", arg.Type())
+			}
+			result = append(result, s)
+		}
+	}
+
+	return result, nil
 }
