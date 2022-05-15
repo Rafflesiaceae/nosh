@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
-	"nosh/fs"
-	"nosh/lang"
-	noshos "nosh/os"
 	"os"
+
+	noshos "github.com/Rafflesiaceae/nosh/os"
+
+	"github.com/Rafflesiaceae/nosh/fs"
+	"github.com/Rafflesiaceae/nosh/lang"
 
 	"go.starlark.net/lib/json"
 	"go.starlark.net/lib/math"

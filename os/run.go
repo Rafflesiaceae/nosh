@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"nosh/internal"
 	"os"
 	"os/exec"
+
+	"github.com/Rafflesiaceae/nosh/internal"
 
 	"go.starlark.net/starlark"
 	strlk "go.starlark.net/starlark"
