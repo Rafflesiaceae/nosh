@@ -1,4 +1,4 @@
-module nosh
+module github.com/Rafflesiaceae/nosh
 
 go 1.18
 

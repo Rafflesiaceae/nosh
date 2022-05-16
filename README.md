@@ -1,4 +1,7 @@
 # nosh
+
+[![CI](https://github.com/Rafflesiaceae/nosh/actions/workflows/main.yml/badge.svg)](https://github.com/Rafflesiaceae/nosh/actions/workflows/main.yml)
+
 A cross-platform "shell", maybe, eventually, but not really.
 
 Maybe eventually useful to at least prototype cross-plat shell-tasks instead of
@@ -14,7 +17,7 @@ put 'em together, what can go wrong?
 - [ ] defer (?)
 - [ ] signal handling
 - [ ] set -e (NOTE: there's no exceptions in starlark)
-- [ ] set -x
+- [/] set -x
 - [X] json
 - [X] math
 - [ ] xml
@@ -23,45 +26,55 @@ put 'em together, what can go wrong?
 - [ ] hash
 - [ ] base64
 - [ ] templating
-- [ ] env
+- [X] getenv/setenv
+- [X] expand env
+    + [ ] also expand ~ tilde ?
 - [ ] PWD / cd
 - [X] sleep
 - [ ] dates
 - [ ] parallel
 - [ ] args
 - [ ] cli / argparse ?
+- [X] cli -c
 
-- [ ] os.exec
+- [X] os.run
+	+ [X] capture
+	+ [X] env
 	+ [ ] pipes
-	+ [ ] redirections
+	+ [X] redirections
 	+ [ ] background
 	+ [ ] timeouts
-- [ ] os.distro/kind/os-type/uname
+- [X] os.distro/kind/os-type/uname
 - [ ] os.pkill <pid> <name-*>
 - [ ] os.https://nim-lang.org/docs/dynlib.html
-- [ ] os.expandTilde
 - [ ] os.getTempDir
 - [ ] os.sendSignal
 - [ ] os.registry (WIN-ONLY)
+- [X] os.random
+- [ ] os.clipboard
 
 - [X] fs.find
 - [ ] fs.join
 - [ ] fs.realpath
 - [ ] fs.basename
 - [ ] fs.symlink-handling
+- [X] fs.exists
+	+ [X] fs.is_file
+	+ [X] fs.is_dir
+- [ ] fs.stat
+- [X] fs.read
+- [X] fs.write
+- [X] fs.remove
+- [X] fs.touch
 
 - [ ] sh.stat
 - [ ] sh.mv
 - [ ] sh.cp
 	+ [ ] -r
-- [ ] sh.find
 - [ ] sh.mktemp
-- [ ] sh.cat/read_file
 - [ ] sh.printf
 - [ ] sh.echo
 - [ ] sh.tee
-
-- [ ] os.clipboard
 
 - [ ] net.ping
 - [ ] net.curl
