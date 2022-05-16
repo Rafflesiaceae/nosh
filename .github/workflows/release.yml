@@ -1,9 +1,5 @@
 name: Create Release
-on:
-  push:
-    tags:
-      - 'v*'
-  workflow_dispatch:
+on: [workflow_dispatch]
 
 jobs:
 
