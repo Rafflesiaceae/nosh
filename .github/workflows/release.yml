@@ -1,0 +1,59 @@
+name: Create Release
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: ""
+            # Changes in this Release
+            # - First Change
+            # - Second Change
+          draft: false
+          prerelease: false
+
+  release_assets:
+    name: Release assets
+    needs: create_release # we need to know the upload URL
+    runs-on: ${{ matrix.os.id }} # we run many different builds
+    strategy:
+      # just an example matrix
+      matrix:
+        os:
+          # - os: ubuntu-latest
+          # - os: macos-latest
+          # - os: windows-latest
+          - { id: ubuntu-latest  , bin_ext: "" }
+          - { id: macos-latest   , bin_ext: "" }
+          - { id: windows-latest , bin_ext: ".exe" }
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build nosh
+        run: go build
+
+      - name: Upload release assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_name: program-name-${{ matrix.os.id }}
+          asset_path: ./nosh${{ matrix.os.bin_ext }}
+          asset_content_type: application/octet-stream
