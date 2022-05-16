@@ -1,4 +1,7 @@
 # nosh
+
+[![CI](https://github.com/Rafflesiaceae/nosh/actions/workflows/main.yml/badge.svg)](https://github.com/Rafflesiaceae/nosh/actions/workflows/main.yml)
+
 A cross-platform "shell", maybe, eventually, but not really.
 
 Maybe eventually useful to at least prototype cross-plat shell-tasks instead of
@@ -14,7 +17,7 @@ put 'em together, what can go wrong?
 - [ ] defer (?)
 - [ ] signal handling
 - [ ] set -e (NOTE: there's no exceptions in starlark)
-- [ ] set -x
+- [/] set -x
 - [X] json
 - [X] math
 - [ ] xml
