@@ -44,10 +44,6 @@ jobs:
       - name: Build nosh
         run: go build
 
-      - name: Create Archive
-        id: archive
-        run: tar --sort=name --owner=root:0 --group=root:0 --mtime='1970-01-01' -czf nosh-${{ needs.create_release.outputs.short_sha }}-${{ matrix.os.id }}.tar.gz ./nosh${{ matrix.os.bin_ext }}
-
       - name: Upload release assets
         uses: actions/upload-release-asset@v1
         env:
@@ -55,5 +51,5 @@ jobs:
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
           asset_name: nosh-${{ needs.create_release.outputs.short_sha }}-${{ matrix.os.id }}.tar.gz
-          asset_path: nosh-${{ needs.create_release.outputs.short_sha }}-${{ matrix.os.id }}.tar.gz
-          asset_content_type: application/gzip
+          asset_path: ./nosh${{ matrix.os.bin_ext }}
+          asset_content_type: application/octet-stream
