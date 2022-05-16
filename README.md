@@ -53,14 +53,20 @@ put 'em together, what can go wrong?
 - [ ] fs.realpath
 - [ ] fs.basename
 - [ ] fs.symlink-handling
+- [X] fs.exists
+	+ [X] fs.is_file
+	+ [X] fs.is_dir
+- [ ] fs.stat
+- [X] fs.read
+- [X] fs.write
+- [X] fs.remove
+- [X] fs.touch
 
 - [ ] sh.stat
 - [ ] sh.mv
 - [ ] sh.cp
 	+ [ ] -r
-- [ ] sh.find
 - [ ] sh.mktemp
-- [ ] sh.cat/read_file
 - [ ] sh.printf
 - [ ] sh.echo
 - [ ] sh.tee

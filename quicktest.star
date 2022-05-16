@@ -43,3 +43,39 @@ assert(expand("$nosh_test_env"), "nosh_test_env_has_content")
 res = run(os.executable(), "-c", 'print(expand("$nosh_test_env"))', env=["nosh_test_env=nosh_test_env_has_content"])
 assert(res.stderr, "nosh_test_env_has_content\n") # @TODO `print` should not write to stderr but stdout by default
 assert(res.exitCode, 0)
+
+# test os.exists
+assert(exists(os.executable()))
+
+# test fs.exists/fs.touch/fs.remove - basic
+test_dir         = "/tmp/nosh-quicktest/testd/"
+test_dir_file    = "/tmp/nosh-quicktest/testd/testf"
+test_dir_file_2  = "/tmp/nosh-quicktest/testd/testf2"
+
+touch(test_dir)
+assert(exists(test_dir, dir=True, file=False))
+touch(test_dir_file)
+assert(exists(test_dir_file, dir=False, file=True))
+touch(test_dir_file_2)
+assert(exists(test_dir_file_2, dir=False, file=True))
+
+remove(test_dir_file_2)
+assert(exists(test_dir_file_2, dir=False, file=True), xfail=True)
+remove(test_dir)
+assert(exists(test_dir_file, dir=False, file=True), xfail=True)
+assert(exists(test_dir, dir=True, file=False), xfail=True)
+
+# test fs.remove - force (ignores missing files)
+test_dir_missing = "/tmp/nosh-quicktest/testd/missing_directory"
+remove(test_dir_missing, force=True)
+
+# test fs.write/fs.read
+remove("/tmp/otto_neurath", force=True)
+write(path="/tmp/otto_neurath", contents="oh\n")
+write(path="/tmp/otto_neurath", contents="woe\n", append=True)
+contents = read("/tmp/otto_neurath")
+assert(contents, "oh\nwoe\n")
+remove("/tmp/otto_neurath")
+assert(exists("/tmp/otto_neurath", dir=False, file=True), xfail=True)
+
+print("quicktest passed successfully")

@@ -41,8 +41,10 @@ func run(scriptPath string, src interface{}) {
 	predeclared := starlark.StringDict{
 		"args":   noshos.Args,
 		"assert": starlark.NewBuiltin("assert", lang.Assert),
+		"exists": fs.ModuleExists,
 		"exit":   noshos.ModuleExit,
 		"expand": noshos.ModuleExpand,
+		"find":   fs.ModuleFind,
 		"fs":     fs.Module,
 		"json":   json.Module,
 		"math":   math.Module,
@@ -50,7 +52,11 @@ func run(scriptPath string, src interface{}) {
 		"getenv": noshos.ModuleGetenv,
 		"setenv": noshos.ModuleSetenv,
 		"quit":   noshos.ModuleQuit,
+		"read":   fs.ModuleRead,
+		"remove": fs.ModuleRemove,
 		"run":    noshos.ModuleRun,
+		"touch":  fs.ModuleTouch,
+		"write":  fs.ModuleWrite,
 	}
 
 	// Execute Starlark program in a file.
