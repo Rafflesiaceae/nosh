@@ -3,7 +3,7 @@ on: [workflow_dispatch]
 
 jobs:
 
-  build:
+  create_release:
     name: Create Release
     runs-on: ubuntu-latest
     steps:
