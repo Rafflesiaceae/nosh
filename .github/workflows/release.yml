@@ -1,0 +1,53 @@
+name: Release
+on: [workflow_dispatch]
+
+jobs:
+
+  create_release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      short_sha: ${{ steps.version.outputs.SHORT }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Retrieve version
+        id: version
+        run: |
+          echo "::set-output name=SHORT::$(git rev-parse --short HEAD)"
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: release-${{ steps.version.outputs.SHORT }}
+          release_name: Release ${{ steps.version.outputs.SHORT }}
+          body: ""
+          draft: false
+          prerelease: false
+
+  release_assets:
+    name: Release assets
+    needs: create_release
+    strategy:
+      matrix:
+        os:
+          - { id: ubuntu-latest  , bin_ext: "" }
+          - { id: macos-latest   , bin_ext: "" }
+          - { id: windows-latest , bin_ext: ".exe" }
+    runs-on: ${{ matrix.os.id }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build nosh
+        run: go build -trimpath -ldflags=-buildid
+      - name: Upload release assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_name: nosh-${{ needs.create_release.outputs.short_sha }}-${{ matrix.os.id }}${{ matrix.os.bin_ext }}
+          asset_path: ./nosh${{ matrix.os.bin_ext }}
+          asset_content_type: application/octet-stream
