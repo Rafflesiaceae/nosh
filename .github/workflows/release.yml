@@ -50,6 +50,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_name: nosh-${{ needs.create_release.outputs.short_sha }}-${{ matrix.os.id }}.tar.gz
+          asset_name: nosh-${{ needs.create_release.outputs.short_sha }}-${{ matrix.os.id }}${{ matrix.os.bin_ext }}
           asset_path: ./nosh${{ matrix.os.bin_ext }}
           asset_content_type: application/octet-stream
