@@ -78,4 +78,12 @@ assert(contents, "oh\nwoe\n")
 remove("/tmp/otto_neurath")
 assert(exists("/tmp/otto_neurath", dir=False, file=True), xfail=True)
 
+# test os.run - redir/append
+run(os.executable(), "-c", 'print("otto")', capture=["stderr->/tmp/otto_neurath"])
+run(os.executable(), "-c", 'print("neurath")', capture=["stderr->>/tmp/otto_neurath"])
+assert(exists("/tmp/otto_neurath", dir=False, file=True))
+assert(read("/tmp/otto_neurath"), "otto\nneurath\n")
+fs.remove("/tmp/otto_neurath")
+assert(exists("/tmp/otto_neurath", dir=False, file=True), xfail=True)
+
 print("quicktest passed successfully")

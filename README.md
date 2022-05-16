@@ -38,7 +38,7 @@ put 'em together, what can go wrong?
 	+ [X] capture
 	+ [X] env
 	+ [ ] pipes
-	+ [ ] redirections
+	+ [X] redirections
 	+ [ ] background
 	+ [ ] timeouts
 - [X] os.distro/kind/os-type/uname
@@ -47,6 +47,8 @@ put 'em together, what can go wrong?
 - [ ] os.getTempDir
 - [ ] os.sendSignal
 - [ ] os.registry (WIN-ONLY)
+- [X] os.random
+- [ ] os.clipboard
 
 - [X] fs.find
 - [ ] fs.join
@@ -70,8 +72,6 @@ put 'em together, what can go wrong?
 - [ ] sh.printf
 - [ ] sh.echo
 - [ ] sh.tee
-
-- [ ] os.clipboard
 
 - [ ] net.ping
 - [ ] net.curl

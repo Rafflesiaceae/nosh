@@ -6,12 +6,12 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/Rafflesiaceae/nosh/internal"
 
 	"go.starlark.net/starlark"
 	strlk "go.starlark.net/starlark"
-	"go.starlark.net/syntax"
 )
 
 type RunResult struct { // {{{
@@ -80,14 +80,17 @@ func init() {
 func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var err error
 
-	var runArgs []string
-	var check starlark.Bool = true
-	var capture = runCaptureDefault
-	var debug = false
-	var env *starlark.List
+	var (
+		runArgs []string
+		check   starlark.Bool = true
+		capture               = runCaptureDefault
+		debug                 = false
+		env     *starlark.List
+	)
 
 	var captureStderr, captureStdout bool
-	var devNullStderr, devNullStdout bool
+	var appendStderr, appendStdout bool
+	var redirStderr, redirStdout string
 
 	runArgs, err = internal.UnpackPositionalVarargsString("run", args)
 	if err != nil {
@@ -105,20 +108,39 @@ func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 		var el starlark.Value
 		for iter.Next(&el) {
 
-			if cmp, err := starlark.Compare(syntax.EQL, el, runCaptureStderr); err == nil && cmp == true {
-				captureStderr = true
+			var str string
+			if starStr, ok := el.(starlark.String); ok {
+				str = starStr.GoString()
+			} else {
+				return nil, fmt.Errorf("expected string, got: %v", el)
 			}
-			if cmp, err := starlark.Compare(syntax.EQL, el, runCaptureStderrDevNull); err == nil && cmp == true {
-				captureStderr = false
-				devNullStderr = true
-			}
-			if cmp, err := starlark.Compare(syntax.EQL, el, runCaptureStdout); err == nil && cmp == true {
+
+			switch str {
+			case "stdout":
 				captureStdout = true
+				continue
+			case "stderr":
+				captureStderr = true
+				continue
 			}
-			if cmp, err := starlark.Compare(syntax.EQL, el, runCaptureStdoutDevNull); err == nil && cmp == true {
-				captureStdout = false
-				devNullStdout = true
+
+			if strings.HasPrefix(str, "stdout->>") {
+				redirStdout = strings.SplitN(str, "stdout->>", 2)[1]
+				appendStdout = true
+				continue
+			} else if strings.HasPrefix(str, "stderr->>") {
+				redirStderr = strings.SplitN(str, "stderr->>", 2)[1]
+				appendStderr = true
+				continue
+			} else if strings.HasPrefix(str, "stdout->") {
+				redirStdout = strings.SplitN(str, "stdout->", 2)[1]
+				continue
+			} else if strings.HasPrefix(str, "stderr->") {
+				redirStderr = strings.SplitN(str, "stderr->", 2)[1]
+				continue
 			}
+
+			return nil, fmt.Errorf("unsupported capture: '%s'", el)
 		}
 	}
 
@@ -128,15 +150,43 @@ func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 	var stdoutBuf, stderrBuf bytes.Buffer
 	if captureStdout {
 		cmd.Stdout = &stdoutBuf
-	} else if devNullStdout {
+	} else if redirStdout != "" && redirStdout == "devnull" {
 		cmd.Stdout = io.Discard
+	} else if redirStdout != "" {
+		var f *os.File
+		flags := os.O_RDWR | os.O_CREATE
+		if appendStdout {
+			flags = flags | os.O_APPEND
+		} else {
+			flags = flags | os.O_TRUNC
+		}
+		f, err = os.OpenFile(redirStdout, flags, 0755)
+		if err != nil {
+			return nil, err
+		}
+		defer f.Close()
+		cmd.Stdout = f
 	} else {
 		cmd.Stdout = os.Stdout
 	}
 	if captureStderr {
 		cmd.Stderr = &stderrBuf
-	} else if devNullStderr {
+	} else if redirStderr != "" && redirStderr == "devnull" {
 		cmd.Stderr = io.Discard
+	} else if redirStderr != "" {
+		var f *os.File
+		flags := os.O_RDWR | os.O_CREATE
+		if appendStderr {
+			flags = flags | os.O_APPEND
+		} else {
+			flags = flags | os.O_TRUNC
+		}
+		f, err = os.OpenFile(redirStderr, flags, 0755)
+		if err != nil {
+			return nil, err
+		}
+		defer f.Close()
+		cmd.Stderr = f
 	} else {
 		cmd.Stderr = os.Stderr
 	}
