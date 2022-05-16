@@ -40,10 +40,8 @@ jobs:
     runs-on: ${{ matrix.os.id }}
     steps:
       - uses: actions/checkout@v3
-
       - name: Build nosh
         run: go build -trimpath -ldflags=-buildid
-
       - name: Upload release assets
         uses: actions/upload-release-asset@v1
         env:
