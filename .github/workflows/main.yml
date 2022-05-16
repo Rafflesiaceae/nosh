@@ -23,6 +23,6 @@ jobs: # {{{
         run: go build
 
       - name: Run a quicktest
-        run: ./nosh quicktest.star
+        run: ./nosh quicktest.nosh
   # }}}
 # }}}
