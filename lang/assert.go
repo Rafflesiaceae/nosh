@@ -19,6 +19,7 @@ func Assert(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, 
 	}
 
 	if y == nil {
+		x = x.Truth()
 		y = starlark.True
 	}
 
@@ -32,7 +33,6 @@ func Assert(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, 
 	}
 
 	if !truth {
-		// println("ASDWWEE")
 		return starlark.None, fmt.Errorf("%s != %s", x, y)
 	}
 

@@ -4,6 +4,8 @@
 # test assert
 assert(7+1, 8)
 assert(1, 2, xfail=True)
+assert("neurath")
+assert(not "")
 
 # test starlark features
 ## @XXX f"...{foo}..." formatting strings don't work yet
