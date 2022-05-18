@@ -7,6 +7,7 @@ import (
 
 var ModuleExists = starlark.NewBuiltin("fs.exists", exists)
 var ModuleFind = starlark.NewBuiltin("fs.find", find)
+var ModuleMove = starlark.NewBuiltin("fs.move", move)
 var ModuleRead = starlark.NewBuiltin("fs.read", read)
 var ModuleRemove = starlark.NewBuiltin("fs.remove", remove)
 var ModuleTouch = starlark.NewBuiltin("fs.touch", touch)
@@ -17,6 +18,7 @@ var Module = &starlarkstruct.Module{
 	Members: starlark.StringDict{
 		"exists": ModuleExists,
 		"find":   ModuleFind,
+		"move":   ModuleMove,
 		"read":   ModuleRead,
 		"remove": ModuleRemove,
 		"touch":  ModuleTouch,

@@ -49,6 +49,8 @@ func run(scriptPath string, src interface{}) {
 		"getenv": noshos.ModuleGetenv,
 		"json":   json.Module,
 		"math":   math.Module,
+		"move":   fs.ModuleMove,
+		"mv":     fs.ModuleMove,
 		"os":     noshos.Module,
 		"quit":   noshos.ModuleQuit,
 		"read":   fs.ModuleRead,

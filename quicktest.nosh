@@ -78,6 +78,15 @@ assert(contents, "oh\nwoe\n")
 remove("/tmp/otto_neurath")
 assert(exists("/tmp/otto_neurath", dir=False, file=True), xfail=True)
 
+# test fs.move
+remove("/tmp/otto_neurath", force=True)
+write(path="/tmp/otto_neurath_from", contents="neurath")
+mv("/tmp/otto_neurath_from", "/tmp/otto_neurath")
+contents = read("/tmp/otto_neurath")
+assert(contents, "neurath")
+remove("/tmp/otto_neurath")
+assert(exists("/tmp/otto_neurath", dir=False, file=True), xfail=True)
+
 # test os.run - redir/append
 run(os.executable(), "-c", 'print("otto")', capture=["stderr->/tmp/otto_neurath"])
 run(os.executable(), "-c", 'print("neurath")', capture=["stderr->>/tmp/otto_neurath"])
