@@ -34,9 +34,9 @@ jobs:
     strategy:
       matrix:
         os:
-          - { id: ubuntu-latest  , bin_ext: "" }
-          - { id: macos-latest   , bin_ext: "" }
-          - { id: windows-latest , bin_ext: ".exe" }
+          - { id: ubuntu-latest  , bin_ext: ""     , arch: "linux_amd64" }
+          - { id: macos-latest   , bin_ext: ""     , arch: "darwin_amd64" }
+          - { id: windows-latest , bin_ext: ".exe" , arch: "windows_amd64" }
     runs-on: ${{ matrix.os.id }}
     steps:
       - uses: actions/checkout@v3
@@ -48,6 +48,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_name: nosh-${{ needs.create_release.outputs.short_sha }}-${{ matrix.os.id }}${{ matrix.os.bin_ext }}
+          asset_name: nosh-${{ needs.create_release.outputs.short_sha }}-${{ matrix.os.arch }}${{ matrix.os.bin_ext }}
           asset_path: ./nosh${{ matrix.os.bin_ext }}
           asset_content_type: application/octet-stream
