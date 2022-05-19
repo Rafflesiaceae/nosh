@@ -98,7 +98,7 @@ func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 		return nil, err
 	}
 
-	if err := internal.UnpackKwargs("run", kwargs, "check?", &check, "capture?", &capture, "debug?", &debug, "env?", &env); err != nil {
+	if err := starlark.UnpackArgs("run", nil, kwargs, "check?", &check, "capture?", &capture, "debug?", &debug, "env?", &env); err != nil {
 		return nil, err
 	}
 
