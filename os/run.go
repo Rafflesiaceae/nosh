@@ -91,6 +91,7 @@ func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 	var captureStderr, captureStdout bool
 	var appendStderr, appendStdout bool
 	var redirStderr, redirStdout string
+	var stdin string
 
 	runArgs, err = internal.UnpackPositionalVarargsString("run", args)
 	if err != nil {
@@ -137,6 +138,9 @@ func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 				continue
 			} else if strings.HasPrefix(str, "stderr->") {
 				redirStderr = strings.SplitN(str, "stderr->", 2)[1]
+				continue
+			} else if strings.HasPrefix(str, "stdin<-") {
+				stdin = strings.SplitN(str, "stdin<-", 2)[1]
 				continue
 			}
 
@@ -191,6 +195,20 @@ func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 		cmd.Stderr = os.Stderr
 	}
 
+	var stdinFile *os.File
+	if stdin == "" {
+		goto postStdinAssignment
+	}
+
+	stdinFile, err = os.Open(stdin)
+	if err != nil {
+		return nil, err
+	}
+	defer stdinFile.Close()
+
+	cmd.Stdin = stdinFile
+
+postStdinAssignment:
 	if env != nil {
 		result := make([]string, 0)
 		result = append(result, os.Environ()...)

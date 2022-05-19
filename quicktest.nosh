@@ -97,4 +97,9 @@ assert(read("/tmp/otto_neurath"), "otto\nneurath\n")
 fs.remove("/tmp/otto_neurath")
 assert(exists("/tmp/otto_neurath", dir=False, file=True), xfail=True)
 
+# test os.run - stdin
+write(path="/tmp/otto_neurath", contents="neurath")
+res = run(os.executable(), "-c", 'print(read("<stdin>"))', capture=["stderr", "stdin<-/tmp/otto_neurath"])
+assert(res.stderr, "neurath\n")
+
 print("quicktest passed successfully")
