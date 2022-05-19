@@ -1,6 +1,7 @@
 package fs
 
 import (
+	"fmt"
 	"os"
 
 	"go.starlark.net/starlark"
@@ -13,10 +14,17 @@ func write(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, k
 		append   starlark.Bool = false
 		path     string
 		contents string
+		force    bool = true
 	)
 
-	if err := starlark.UnpackArgs("write", args, kwargs, "path", &path, "contents", &contents, "append?", &append); err != nil {
+	if err := starlark.UnpackArgs("write", args, kwargs, "path", &path, "contents", &contents, "append?", &append, "force?", &force); err != nil {
 		return nil, err
+	}
+
+	if !force {
+		if _, err := os.Stat(path); !os.IsNotExist(err) {
+			return nil, fmt.Errorf("path: \"%s\" already exist", path)
+		}
 	}
 
 	flags := os.O_RDWR | os.O_CREATE
