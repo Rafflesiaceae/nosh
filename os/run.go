@@ -83,7 +83,7 @@ func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 	var (
 		runArgs []string
 		check   starlark.Bool = true
-		capture               = runCaptureDefault
+		capture               = &starlark.List{}
 		debug                 = false
 		env     *starlark.List
 	)
