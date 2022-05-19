@@ -15,7 +15,7 @@ func read(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kw
 		path = strlk.String("")
 	)
 
-	if err = starlark.UnpackPositionalArgs("read", args, kwargs, 1, &path); err != nil {
+	if err = starlark.UnpackArgs("read", args, kwargs, "path", &path); err != nil {
 		return nil, err
 	}
 
