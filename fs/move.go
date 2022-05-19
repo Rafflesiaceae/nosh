@@ -1,6 +1,7 @@
 package fs
 
 import (
+	"fmt"
 	"os"
 	"runtime"
 	"syscall"
@@ -12,12 +13,19 @@ func move(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kw
 	var err error
 
 	var (
-		from string
-		to   string
+		from  string
+		to    string
+		force bool = false
 	)
 
-	if err = starlark.UnpackPositionalArgs("move", args, kwargs, 2, &from, &to); err != nil {
+	if err = starlark.UnpackArgs("move", args, kwargs, "from", &from, "to", &to, "force?", &force); err != nil {
 		return nil, err
+	}
+
+	if !force {
+		if _, err := os.Stat(to); !os.IsNotExist(err) {
+			return nil, fmt.Errorf("to path: \"%s\" already exist", to)
+		}
 	}
 
 	if err = os.Rename(from, to); err != nil {
@@ -29,11 +37,11 @@ func move(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kw
 				// https://msdn.microsoft.com/en-us/library/cc231199.aspx
 
 				if errNo, ok := errorType.Err.(syscall.Errno); ok && errNo == 0x11 /* ERROR_NOT_SAME_DEVICE */ {
-					return starlark.None, MovePath(from, to)
+					return starlark.None, movePathViaCopyAndRemove(from, to, force)
 				}
 
 			} else if errorType.Err == syscall.EXDEV {
-				return starlark.None, MovePath(from, to)
+				return starlark.None, movePathViaCopyAndRemove(from, to, force)
 			}
 		}
 
@@ -41,4 +49,12 @@ func move(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kw
 	}
 
 	return starlark.None, nil
+}
+
+func movePathViaCopyAndRemove(from string, to string, force bool) error {
+	if err := CopyPath(from, to, force); err != nil {
+		return err
+	}
+
+	return os.RemoveAll(from)
 }

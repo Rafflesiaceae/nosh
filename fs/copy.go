@@ -5,14 +5,39 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+
+	"go.starlark.net/starlark"
 )
 
-func MovePath(from string, to string) error {
-	if _, err := os.Stat(from); os.IsNotExist(err) {
-		return fmt.Errorf("from path: \"%s\" doesn't exist, %v", from, err)
+func copyImpl(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
+	var err error
+
+	var (
+		from  string
+		to    string
+		force bool = false
+	)
+
+	if err = starlark.UnpackArgs("copy", args, kwargs, "from", &from, "to", &to, "force?", &force); err != nil {
+		return nil, err
 	}
-	if _, err := os.Stat(to); !os.IsNotExist(err) {
-		return fmt.Errorf("to path: \"%s\" already exists", to)
+
+	if err = CopyPath(from, to, force); err != nil {
+		return nil, err
+	}
+
+	return starlark.None, nil
+}
+
+func CopyPath(from string, to string, force bool) error {
+	if _, err := os.Stat(from); os.IsNotExist(err) {
+		return fmt.Errorf("from path: \"%s\" doesn't exist", from)
+	}
+
+	if !force {
+		if _, err := os.Stat(to); !os.IsNotExist(err) {
+			return fmt.Errorf("to path: \"%s\" already exists", to)
+		}
 	}
 
 	if fi, err := os.Stat(from); err != nil {
@@ -27,7 +52,8 @@ func MovePath(from string, to string) error {
 			return err
 		}
 	}
-	return os.RemoveAll(from)
+
+	return nil
 }
 
 func CopyDir(from string, to string) error {
