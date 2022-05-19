@@ -77,7 +77,6 @@ func fromPath(p string) (*FileEntry, error) {
 
 	if fi.Mode()&fs.ModeSymlink != 0 {
 		result.IsSymlink = true
-		// t.Errorf("%q should not be a symlink", path)
 	}
 
 	return result, nil
@@ -98,7 +97,6 @@ func (it *fileIterable) Type() string          { return "file-iterable" }
 func (it *fileIterable) String() string        { return fmt.Sprintf("file-iterable(%s)", it.path) }
 
 func (it *fileIterable) Iterate() strlk.Iterator {
-	// return &fileIterator{path: it.path, l: []strlk.String{it.path}}
 	initialPath, err := fromPath(it.path.GoString())
 	if err != nil {
 		panic(err)
@@ -113,9 +111,8 @@ func (it *fileIterable) Iterate() strlk.Iterator {
 // {{{1 fileIterator
 type fileIterator struct {
 	path strlk.String
-	// l    []strlk.String
-	l []*FileEntry
-	i int
+	l    []*FileEntry
+	i    int
 }
 
 var (
@@ -123,7 +120,6 @@ var (
 )
 
 func (it *fileIterator) advance() {
-	// var p *strlk.String
 	var e *FileEntry
 	e = it.l[it.i]
 
@@ -181,7 +177,6 @@ func (it *fileIterator) Next(p *strlk.Value) bool {
 
 func (it *fileIterator) Done() {
 	// @TODO
-	// println("IM DONE")
 	// if !it.l.frozen {
 	// 	it.l.itercount--
 	// }
