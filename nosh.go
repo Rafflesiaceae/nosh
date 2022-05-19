@@ -42,6 +42,7 @@ func run(scriptPath string, src interface{}) {
 		"args":   noshos.Args,
 		"assert": starlark.NewBuiltin("assert", lang.Assert),
 		"copy":   fs.ModuleCopy,
+		"cp":     fs.ModuleCopy,
 		"exists": fs.ModuleExists,
 		"exit":   noshos.ModuleExit,
 		"expand": noshos.ModuleExpand,
