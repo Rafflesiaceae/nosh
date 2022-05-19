@@ -71,14 +71,18 @@ assert(exists(test_dir, dir=True, file=False), xfail=True)
 test_dir_missing = "/tmp/nosh-quicktest/testd/missing_directory"
 remove(test_dir_missing, force=True)
 
+def remove_file_assert(*paths):
+    for path in paths:
+        remove(path, force=False)
+        assert(exists(path, dir=False, file=True), xfail=True)
+
 # test fs.write/fs.read
 remove("/tmp/otto_neurath", force=True)
 write(path="/tmp/otto_neurath", contents="oh\n")
 write(path="/tmp/otto_neurath", contents="woe\n", append=True)
 contents = read("/tmp/otto_neurath")
 assert(contents, "oh\nwoe\n")
-remove("/tmp/otto_neurath")
-assert(exists("/tmp/otto_neurath", dir=False, file=True), xfail=True)
+remove_file_assert("/tmp/otto_neurath")
 
 # test fs.move
 remove("/tmp/otto_neurath", force=True)
@@ -86,20 +90,29 @@ write(path="/tmp/otto_neurath_from", contents="neurath")
 mv("/tmp/otto_neurath_from", "/tmp/otto_neurath")
 contents = read("/tmp/otto_neurath")
 assert(contents, "neurath")
-remove("/tmp/otto_neurath")
-assert(exists("/tmp/otto_neurath", dir=False, file=True), xfail=True)
+remove_file_assert("/tmp/otto_neurath")
 
 # test os.run - redir/append
 run(os.executable(), "-c", 'print("otto")', capture=["stderr->/tmp/otto_neurath"])
 run(os.executable(), "-c", 'print("neurath")', capture=["stderr->>/tmp/otto_neurath"])
 assert(exists("/tmp/otto_neurath", dir=False, file=True))
 assert(read("/tmp/otto_neurath"), "otto\nneurath\n")
-fs.remove("/tmp/otto_neurath")
-assert(exists("/tmp/otto_neurath", dir=False, file=True), xfail=True)
+remove_file_assert("/tmp/otto_neurath")
 
 # test os.run - stdin
 write(path="/tmp/otto_neurath", contents="neurath")
 res = run(os.executable(), "-c", 'print(read("<stdin>"))', capture=["stderr", "stdin<-/tmp/otto_neurath"])
 assert(res.stderr, "neurath\n")
+remove_file_assert("/tmp/otto_neurath")
+
+# test json
+write(path="/tmp/otto_neurath", contents='{"otto": "neurath"}')
+raw = read("/tmp/otto_neurath")
+obj = json.decode(raw)
+write(path="/tmp/otto_neurath_rewrite", contents=json.indent(json.encode(obj)).replace("\n", "").replace("\t", ""))
+raw_rewrite = read("/tmp/otto_neurath_rewrite")
+assert(raw, raw_rewrite)
+remove_file_assert("/tmp/otto_neurath", "/tmp/otto_neurath_rewrite")
+
 
 print("quicktest passed successfully")
