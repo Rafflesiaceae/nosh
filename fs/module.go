@@ -1,6 +1,8 @@
 package fs
 
 import (
+	"os"
+
 	"go.starlark.net/starlark"
 	"go.starlark.net/starlarkstruct"
 )
@@ -16,12 +18,14 @@ var ModuleWrite = starlark.NewBuiltin("fs.write", write)
 var Module = &starlarkstruct.Module{
 	Name: "fs",
 	Members: starlark.StringDict{
-		"exists": ModuleExists,
-		"find":   ModuleFind,
-		"move":   ModuleMove,
-		"read":   ModuleRead,
-		"remove": ModuleRemove,
-		"touch":  ModuleTouch,
-		"write":  ModuleWrite,
+		"exists":              ModuleExists,
+		"find":                ModuleFind,
+		"move":                ModuleMove,
+		"path_list_separator": starlark.String(os.PathListSeparator),
+		"path_separator":      starlark.String(os.PathSeparator),
+		"read":                ModuleRead,
+		"remove":              ModuleRemove,
+		"touch":               ModuleTouch,
+		"write":               ModuleWrite,
 	},
 }

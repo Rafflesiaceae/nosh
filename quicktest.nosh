@@ -49,6 +49,14 @@ assert(res.exitCode, 0)
 # test os.exists
 assert(exists(os.executable()))
 
+# test fs.path_separator / fs.path_list_separator
+if os.distro().os == "windows":
+    assert(fs.path_separator, "\\")
+    assert(fs.path_list_separator, ";")
+else:
+    assert(fs.path_separator, "/")
+    assert(fs.path_list_separator, ":")
+
 # test fs.exists/fs.touch/fs.remove - basic
 test_dir         = "/tmp/nosh-quicktest/testd/"
 test_dir_file    = "/tmp/nosh-quicktest/testd/testf"
