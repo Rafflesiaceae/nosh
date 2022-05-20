@@ -16,24 +16,30 @@ var ModuleQuit = starlark.NewBuiltin("os.quit", quit)
 var ModuleRun = starlark.NewBuiltin("os.run", run)
 var ModuleSetenv = starlark.NewBuiltin("os.setenv", setenv)
 
-var Module = &starlarkstruct.Module{
-	Name: "os",
-	Members: starlark.StringDict{
-		"args":       Args,
-		"distro":     starlark.NewBuiltin("os.distro", distro),
-		"executable": starlark.NewBuiltin("os.executable", executable),
-		"exit":       ModuleExit,
-		"expand":     ModuleExpand,
-		"getenv":     ModuleGetenv,
-		"quit":       ModuleQuit,
-		"run":        ModuleRun,
-		"isDarwin":   starlark.Bool(runtime.GOOS == "darwin"),
-		"isFreebsd":  starlark.Bool(runtime.GOOS == "freebsd"),
-		"isLinux":    starlark.Bool(runtime.GOOS == "linux"),
-		"isWindows":  starlark.Bool(runtime.GOOS == "windows"),
-		"setenv":     ModuleSetenv,
-		"sleep":      starlark.NewBuiltin("os.sleep", sleep),
-	},
+var Module *starlarkstruct.Module
+
+func init() {
+	runtimeGoOs := runtime.GOOS
+
+	Module = &starlarkstruct.Module{
+		Name: "os",
+		Members: starlark.StringDict{
+			"args":       Args,
+			"distro":     starlark.NewBuiltin("os.distro", distro),
+			"executable": starlark.NewBuiltin("os.executable", executable),
+			"exit":       ModuleExit,
+			"expand":     ModuleExpand,
+			"getenv":     ModuleGetenv,
+			"quit":       ModuleQuit,
+			"run":        ModuleRun,
+			"isDarwin":   starlark.Bool(runtimeGoOs == "darwin"),
+			"isFreebsd":  starlark.Bool(runtimeGoOs == "freebsd"),
+			"isLinux":    starlark.Bool(runtimeGoOs == "linux"),
+			"isWindows":  starlark.Bool(runtimeGoOs == "windows"),
+			"setenv":     ModuleSetenv,
+			"sleep":      starlark.NewBuiltin("os.sleep", sleep),
+		},
+	}
 }
 
 func executable(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {

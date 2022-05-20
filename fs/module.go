@@ -19,21 +19,26 @@ var ModuleRemove = starlark.NewBuiltin("fs.remove", remove)
 var ModuleTouch = starlark.NewBuiltin("fs.touch", touch)
 var ModuleWrite = starlark.NewBuiltin("fs.write", write)
 
-var Module = &starlarkstruct.Module{
-	Name: "fs",
-	Members: starlark.StringDict{
-		"chdir":               ModuleChdir,
-		"copy":                ModuleCopy,
-		"exists":              ModuleExists,
-		"find":                ModuleFind,
-		"mkdir":               ModuleMkdir,
-		"move":                ModuleMove,
-		"path_list_separator": starlark.String(os.PathListSeparator),
-		"path_separator":      starlark.String(os.PathSeparator),
-		"pwd":                 ModulePwd,
-		"read":                ModuleRead,
-		"remove":              ModuleRemove,
-		"touch":               ModuleTouch,
-		"write":               ModuleWrite,
-	},
+var Module *starlarkstruct.Module
+
+func init() {
+	Module = &starlarkstruct.Module{
+		Name: "fs",
+		Members: starlark.StringDict{
+			"chdir":               ModuleChdir,
+			"copy":                ModuleCopy,
+			"exists":              ModuleExists,
+			"find":                ModuleFind,
+			"mkdir":               ModuleMkdir,
+			"move":                ModuleMove,
+			"path_list_separator": starlark.String(os.PathListSeparator),
+			"path_separator":      starlark.String(os.PathSeparator),
+			"pwd":                 ModulePwd,
+			"read":                ModuleRead,
+			"remove":              ModuleRemove,
+			"touch":               ModuleTouch,
+			"write":               ModuleWrite,
+		},
+	}
+
 }
