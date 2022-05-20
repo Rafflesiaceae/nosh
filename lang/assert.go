@@ -23,7 +23,7 @@ func Assert(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, 
 		y = starlark.True
 	}
 
-	truth, err := x.CompareSameType(syntax.EQL, y, 1)
+	truth, err := x.CompareSameType(syntax.EQL, y, 100)
 	if err != nil {
 		return nil, err
 	}
