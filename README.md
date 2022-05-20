@@ -63,7 +63,7 @@ put 'em together, what can go wrong?
 - [X] fs.exists
 	+ [X] fs.is_file
 	+ [X] fs.is_dir
-- [ ] fs.mkdir
+- [X] fs.mkdir
 - [ ] fs.stat
 - [X] fs.read
 - [X] fs.write

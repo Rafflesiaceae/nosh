@@ -10,6 +10,7 @@ import (
 var ModuleCopy = starlark.NewBuiltin("fs.copy", copyImpl)
 var ModuleExists = starlark.NewBuiltin("fs.exists", exists)
 var ModuleFind = starlark.NewBuiltin("fs.find", find)
+var ModuleMkdir = starlark.NewBuiltin("fs.mkdir", mkdir)
 var ModuleMove = starlark.NewBuiltin("fs.move", move)
 var ModuleRead = starlark.NewBuiltin("fs.read", read)
 var ModuleRemove = starlark.NewBuiltin("fs.remove", remove)
@@ -22,6 +23,7 @@ var Module = &starlarkstruct.Module{
 		"copy":                ModuleCopy,
 		"exists":              ModuleExists,
 		"find":                ModuleFind,
+		"mkdir":               ModuleMkdir,
 		"move":                ModuleMove,
 		"path_list_separator": starlark.String(os.PathListSeparator),
 		"path_separator":      starlark.String(os.PathSeparator),

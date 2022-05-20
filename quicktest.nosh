@@ -1,6 +1,11 @@
 #!/usr/bin/env nosh
 # [RUN] ./cycle.sh
 
+def remove_file_assert(*paths):
+    for path in paths:
+        remove(path, force=False)
+        assert(exists(path, dir=False, file=True), xfail=True)
+
 # test assert
 assert(7+1, 8)
 assert(1, 2, xfail=True)
@@ -57,6 +62,14 @@ else:
     assert(fs.path_separator, "/")
     assert(fs.path_list_separator, ":")
 
+# test fs.mkdir
+test_dir = "/tmp/nosh-quicktest/testd/"
+mkdir(test_dir)
+assert(exists(test_dir, dir=True))
+write(test_dir+"file", "meep", force=False, mkdir=False)
+assert(read(test_dir+"file"), "meep")
+remove_file_assert(test_dir)
+
 # test fs.exists/fs.touch/fs.remove - basic
 test_dir         = "/tmp/nosh-quicktest/testd/"
 test_dir_file    = "/tmp/nosh-quicktest/testd/testf"
@@ -78,11 +91,6 @@ assert(exists(test_dir, dir=True, file=False), xfail=True)
 # test fs.remove - force (ignores missing files)
 test_dir_missing = "/tmp/nosh-quicktest/testd/missing_directory"
 remove(test_dir_missing, force=True)
-
-def remove_file_assert(*paths):
-    for path in paths:
-        remove(path, force=False)
-        assert(exists(path, dir=False, file=True), xfail=True)
 
 # test fs.write/fs.read
 remove("/tmp/otto_neurath", force=True)
