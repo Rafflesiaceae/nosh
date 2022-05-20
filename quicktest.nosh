@@ -62,11 +62,13 @@ else:
     assert(fs.path_separator, "/")
     assert(fs.path_list_separator, ":")
 
-# test fs.mkdir
+# test fs.mkdir / fs.cd
 test_dir = "/tmp/nosh-quicktest/testd/"
 mkdir(test_dir)
 assert(exists(test_dir, dir=True))
-write(test_dir+"file", "meep", force=False, mkdir=False)
+cd(test_dir)
+write("file", "meep", force=False, mkdir=False)
+assert(read("file"), "meep")
 assert(read(test_dir+"file"), "meep")
 remove_file_assert(test_dir)
 

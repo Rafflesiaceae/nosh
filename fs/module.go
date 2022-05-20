@@ -7,6 +7,7 @@ import (
 	"go.starlark.net/starlarkstruct"
 )
 
+var ModuleChdir = starlark.NewBuiltin("fs.chdir", chdir)
 var ModuleCopy = starlark.NewBuiltin("fs.copy", copyImpl)
 var ModuleExists = starlark.NewBuiltin("fs.exists", exists)
 var ModuleFind = starlark.NewBuiltin("fs.find", find)
@@ -20,6 +21,7 @@ var ModuleWrite = starlark.NewBuiltin("fs.write", write)
 var Module = &starlarkstruct.Module{
 	Name: "fs",
 	Members: starlark.StringDict{
+		"chdir":               ModuleChdir,
 		"copy":                ModuleCopy,
 		"exists":              ModuleExists,
 		"find":                ModuleFind,

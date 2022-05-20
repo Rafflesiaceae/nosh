@@ -41,6 +41,8 @@ func run(scriptPath string, src interface{}) {
 	predeclared := starlark.StringDict{
 		"args":   noshos.Args,
 		"assert": starlark.NewBuiltin("assert", lang.Assert),
+		"cd":     fs.ModuleChdir,
+		"chdir":  fs.ModuleChdir,
 		"copy":   fs.ModuleCopy,
 		"cp":     fs.ModuleCopy,
 		"exists": fs.ModuleExists,
