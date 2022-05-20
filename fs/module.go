@@ -11,6 +11,7 @@ var ModuleChdir = starlark.NewBuiltin("fs.chdir", chdir)
 var ModuleCopy = starlark.NewBuiltin("fs.copy", copyImpl)
 var ModuleExists = starlark.NewBuiltin("fs.exists", exists)
 var ModuleFind = starlark.NewBuiltin("fs.find", find)
+var ModuleJoin = starlark.NewBuiltin("fs.join", join)
 var ModuleMkdir = starlark.NewBuiltin("fs.mkdir", mkdir)
 var ModuleMove = starlark.NewBuiltin("fs.move", move)
 var ModulePopd = starlark.NewBuiltin("fs.popd", popd)
@@ -31,6 +32,7 @@ func init() {
 			"dir_stack":           dirStack,
 			"exists":              ModuleExists,
 			"find":                ModuleFind,
+			"join":                ModuleJoin,
 			"mkdir":               ModuleMkdir,
 			"move":                ModuleMove,
 			"path_list_separator": starlark.String(os.PathListSeparator),

@@ -58,12 +58,16 @@ assert(res.exitCode, 0)
 assert(exists(os.executable()))
 
 # test fs.path_separator / fs.path_list_separator
+sep = fs.path_separator
 if os.isWindows:
     assert(fs.path_separator, "\\")
     assert(fs.path_list_separator, ";")
 else:
     assert(fs.path_separator, "/")
     assert(fs.path_list_separator, ":")
+
+# test fs.join
+assert(fs.join(tmpdir, "otto", "neurath"), tmpdir+sep+"otto"+sep+"neurath")
 
 # test fs.mkdir / fs.cd / fs.pwd
 test_dir = "/tmp/nosh-quicktest/testd"
