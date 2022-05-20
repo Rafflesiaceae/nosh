@@ -15,29 +15,29 @@ cd(tmpdir)
 tmpdir = pwd()
 remove(tmpdir)
 
-# test assert
+# TEST assert
 assert(7+1, 8)
 assert(1, 2, xfail=True)
 assert("neurath")
 assert(not "")
 
-# test starlark features
+# TEST starlark features
 ## @XXX f"...{foo}..." formatting strings don't work yet
 assert("{}".format("qwe"), "qwe")
 
-# test fs.find
+# TEST fs.find
 found_count = 0
 for x in fs.find(git_worktree_toplevel):
     found_count+=1
 assert(found_count >= 62, True)
 
-# test os.distro
+# TEST os.distro
 res = os.distro()
 assert(res.os in ["linux", "windows", "darwin", "freebsd"])
 assert(len(res.arch) >= 3)
 assert(any((os.isLinux, os.isWindows, os.isDarwin, os.isFreebsd)))
 
-# test os.run
+# TEST os.run
 res = run(os.executable(), "--version", capture=["stdout"])
 assert(res.stdout, "0.0.1")
 assert(res.exitCode, 0)
@@ -50,21 +50,21 @@ res = run(os.executable(), "-c", 'print(args)', 'nosh_first_arg', 'nosh_second_a
 assert(res.stderr, '["nosh_first_arg", "nosh_second_arg"]\n')
 assert(res.exitCode, 0)
 
-# test setenv/getenv/expand
+# TEST setenv/getenv/expand
 setenv("nosh_test_env", "nosh_test_env_has_content")
 assert("nosh_test_env=nosh_test_env_has_content" in getenv())
 assert(getenv("nosh_test_env"),  "nosh_test_env_has_content")
 assert(expand("$nosh_test_env"), "nosh_test_env_has_content")
 
-# test os.run & expand
+# TEST os.run & expand
 res = run(os.executable(), "-c", 'print(expand("$nosh_test_env"))', env=["nosh_test_env=nosh_test_env_has_content"], capture=["stderr"])
 assert(res.stderr, "nosh_test_env_has_content\n") # @TODO `print` should not write to stderr but stdout by default
 assert(res.exitCode, 0)
 
-# test os.exists
+# TEST os.exists
 assert(exists(os.executable()))
 
-# test fs.path_separator / fs.path_list_separator
+# TEST fs.path_separator / fs.path_list_separator
 sep = fs.path_separator
 if os.isWindows:
     assert(fs.path_separator, "\\")
@@ -73,10 +73,10 @@ else:
     assert(fs.path_separator, "/")
     assert(fs.path_list_separator, ":")
 
-# test fs.join
+# TEST fs.join
 assert(fs.join(tmpdir, "otto", "neurath"), tmpdir+sep+"otto"+sep+"neurath")
 
-# test fs.mkdir / fs.cd / fs.pwd
+# TEST fs.mkdir / fs.cd / fs.pwd
 test_dir = fs.join(tmpdir, "testd")
 mkdir(test_dir)
 assert(exists(test_dir, dir=True))
@@ -87,7 +87,7 @@ assert(read("file"), "meep")
 assert(read(fs.join(test_dir, "file")), "meep")
 remove_file_assert(test_dir)
 
-# test fs.popd / fs.pwd
+# TEST fs.popd / fs.pwd
 popd(reset=True)
 assert(popd() == None)
 tmpdir_otto         = fs.join(tmpdir, "/otto")
@@ -111,7 +111,7 @@ assert(pwd() == tmpdir)
 assert(popd() == None)
 remove_file_assert(tmpdir_otto_neurath, tmpdir_otto)
 
-# test fs.exists/fs.touch/fs.remove - basic
+# TEST fs.exists/fs.touch/fs.remove - basic
 test_dir         = fs.join(tmpdir, "testd") + sep
 test_dir_file    = fs.join(tmpdir, "testd", "testf")
 test_dir_file_2  = fs.join(tmpdir, "testd", "testf2")
@@ -129,11 +129,11 @@ remove(test_dir)
 assert(exists(test_dir_file, dir=False, file=True), xfail=True)
 assert(exists(test_dir, dir=True, file=False), xfail=True)
 
-# test fs.remove - force (ignores missing files)
+# TEST fs.remove - force (ignores missing files)
 test_dir_missing = fs.join(tmpdir, "testd", "missing_directory")
 remove(test_dir_missing, force=True)
 
-# test fs.write/fs.read
+# TEST fs.write/fs.read
 remove(tmpdir, force=True)
 otto = fs.join(tmpdir, "otto_neurath")
 write(path=otto, contents="oh\n")
@@ -146,7 +146,7 @@ assert(read(otto_subdir), "soe\n")
 
 remove_file_assert(otto, otto_subdir)
 
-# test fs.copy
+# TEST fs.copy
 otto_from   = fs.join(tmpdir, "otto_neurath_from")
 otto_to     = fs.join(tmpdir, "otto_neurath_to")
 otto_subdir = fs.join(tmpdir, "subdir")
@@ -167,7 +167,7 @@ assert(read(otto_subdir_to), "otto")
 
 remove_file_assert(otto_from, otto_subdir)
 
-# test fs.move
+# TEST fs.move
 otto_from   = fs.join(tmpdir, "otto_neurath_from")
 otto_to     = fs.join(tmpdir, "otto_neurath_to")
 otto_subdir = fs.join(tmpdir, "subdir")
@@ -189,7 +189,7 @@ assert(read(otto_subdir_to), "ottrath")
 
 remove_file_assert(otto_to, otto_subdir)
 
-# test os.run - redir/append
+# TEST os.run - redir/append
 otto = fs.join(tmpdir, "otto_neurath")
 remove(otto, force=True)
 run(os.executable(), "-c", 'print("otto")', capture=["stderr->{}".format(otto)])
@@ -198,14 +198,14 @@ assert(exists(otto, dir=False, file=True))
 assert(read(otto), "otto\nneurath\n")
 remove_file_assert(otto)
 
-# test os.run - stdin
+# TEST os.run - stdin
 otto = fs.join(tmpdir, "otto_neurath")
 write(path=otto, contents="neurath")
 res = run(os.executable(), "-c", 'print(read("<stdin>"))', capture=["stderr", "stdin<-{}".format(otto)])
 assert(res.stderr, "neurath\n")
 remove_file_assert(otto)
 
-# test json
+# TEST json
 otto         = fs.join(tmpdir, "otto_neurath")
 otto_rewrite = fs.join(tmpdir, "otto_neurath_rewrite")
 
