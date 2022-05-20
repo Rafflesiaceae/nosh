@@ -6,6 +6,8 @@ def remove_file_assert(*paths):
         remove(path, force=False)
         assert(exists(path, dir=False, file=True), xfail=True)
 
+tmpdir = "/tmp/nosh-quicktest"
+
 # test assert
 assert(7+1, 8)
 assert(1, 2, xfail=True)
@@ -63,15 +65,40 @@ else:
     assert(fs.path_separator, "/")
     assert(fs.path_list_separator, ":")
 
-# test fs.mkdir / fs.cd
-test_dir = "/tmp/nosh-quicktest/testd/"
+# test fs.mkdir / fs.cd / fs.pwd
+test_dir = "/tmp/nosh-quicktest/testd"
 mkdir(test_dir)
 assert(exists(test_dir, dir=True))
 cd(test_dir)
+assert(pwd(), test_dir)
 write("file", "meep", force=False, mkdir=False)
 assert(read("file"), "meep")
-assert(read(test_dir+"file"), "meep")
+assert(read(test_dir+"/file"), "meep")
 remove_file_assert(test_dir)
+
+# test fs.popd / fs.pwd
+popd(reset=True)
+assert(popd() == None)
+tmpdir_otto         = tmpdir+"/otto"
+tmpdir_otto_neurath = tmpdir+"/otto/neurath"
+mkdir(tmpdir_otto         , mkdir=False)
+mkdir(tmpdir_otto_neurath , mkdir=False)
+assert(exists(tmpdir_otto         , dir=True))
+assert(exists(tmpdir_otto_neurath , dir=True))
+assert(fs.dir_stack, [])
+cd(tmpdir)
+assert(fs.dir_stack, [])
+cd(tmpdir_otto)
+assert(fs.dir_stack, ["/tmp/nosh-quicktest"])
+cd(tmpdir_otto_neurath)
+assert(fs.dir_stack, ["/tmp/nosh-quicktest", "/tmp/nosh-quicktest/otto"])
+assert(popd(), "/tmp/nosh-quicktest/otto")
+assert(fs.dir_stack, ["/tmp/nosh-quicktest"])
+assert(popd(), "/tmp/nosh-quicktest")
+assert(fs.dir_stack, [])
+assert(pwd() == tmpdir)
+assert(popd() == None)
+remove_file_assert(tmpdir_otto_neurath,tmpdir_otto)
 
 # test fs.exists/fs.touch/fs.remove - basic
 test_dir         = "/tmp/nosh-quicktest/testd/"

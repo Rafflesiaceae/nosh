@@ -53,6 +53,7 @@ put 'em together, what can go wrong?
 - [ ] os.clipboard
 
 - [X] fs.chdir / cd
+- [X] fs.popd
 - [X] fs.pwd / pwd
 - [X] fs.find
 - [ ] fs.join

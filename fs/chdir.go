@@ -15,8 +15,15 @@ func chdir(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, k
 		return nil, err
 	}
 
+	pwd, _ := os.Getwd()
+
 	if err := os.Chdir(path); err != nil {
 		return nil, err
 	}
+
+	if pwd != "" {
+		dirStack.Append(starlark.String(pwd))
+	}
+
 	return starlark.String(path), nil
 }

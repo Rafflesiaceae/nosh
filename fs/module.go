@@ -13,6 +13,7 @@ var ModuleExists = starlark.NewBuiltin("fs.exists", exists)
 var ModuleFind = starlark.NewBuiltin("fs.find", find)
 var ModuleMkdir = starlark.NewBuiltin("fs.mkdir", mkdir)
 var ModuleMove = starlark.NewBuiltin("fs.move", move)
+var ModulePopd = starlark.NewBuiltin("fs.popd", popd)
 var ModulePwd = starlark.NewBuiltin("fs.pwd", pwd)
 var ModuleRead = starlark.NewBuiltin("fs.read", read)
 var ModuleRemove = starlark.NewBuiltin("fs.remove", remove)
@@ -27,12 +28,14 @@ func init() {
 		Members: starlark.StringDict{
 			"chdir":               ModuleChdir,
 			"copy":                ModuleCopy,
+			"dir_stack":           dirStack,
 			"exists":              ModuleExists,
 			"find":                ModuleFind,
 			"mkdir":               ModuleMkdir,
 			"move":                ModuleMove,
 			"path_list_separator": starlark.String(os.PathListSeparator),
 			"path_separator":      starlark.String(os.PathSeparator),
+			"popd":                ModulePopd,
 			"pwd":                 ModulePwd,
 			"read":                ModuleRead,
 			"remove":              ModuleRemove,
