@@ -88,35 +88,47 @@ assert(read(fs.join(test_dir, "file")), "meep")
 remove_file_assert(test_dir)
 
 # TEST fs.popd / fs.pwd / dir.stack
-popd(reset=True)
-assert(popd() == None)
 tmpdir_otto         = fs.join(tmpdir, "/otto")
 tmpdir_otto_neurath = fs.join(tmpdir, "/otto/neurath")
 mkdir(tmpdir_otto         , mkdir=False)
 mkdir(tmpdir_otto_neurath , mkdir=False)
 assert(exists(tmpdir_otto         , dir=True))
 assert(exists(tmpdir_otto_neurath , dir=True))
+
+cd(tmpdir)
+popd(reset=True)
+assert(popd() == None)
 assert(fs.dir_stack, [])
 
 # we create a directory, cd to it, then remove it, to make sure the next `cd`
 # will fail it's `os.Getwd()` call to also cover cases where PWD's don't exist
-otto_missing_dir = fs.join(tmpdir, "soon_missing_dir")
-mkdir(otto_missing_dir)
-cd(otto_missing_dir)
-remove(otto_missing_dir)
+missing_dir = fs.join(tmpdir, "missing_dir")
+mkdir(missing_dir)
+cd(missing_dir)
+remove(missing_dir)
 
+if os.isDarwin: # os.Getwd() calls don't fail on MacOS
+    start_stack = [tmpdir, missing_dir]
+else:
+    start_stack = [tmpdir]
+
+# dir_stack only changes when a new path is pushed
 cd(tmpdir)
-assert(fs.dir_stack, [])
+assert(fs.dir_stack, start_stack)
+cd(tmpdir)
+assert(fs.dir_stack, start_stack)
+cd(tmpdir)
+assert(fs.dir_stack, start_stack)
+
 cd(tmpdir_otto)
-assert(fs.dir_stack, [tmpdir])
+assert(fs.dir_stack, start_stack)
 cd(tmpdir_otto_neurath)
-assert(fs.dir_stack, [tmpdir, fs.join(tmpdir, "otto")])
+assert(fs.dir_stack, start_stack + [fs.join(tmpdir, "otto")])
 assert(popd(), fs.join(tmpdir, "otto"))
-assert(fs.dir_stack, [tmpdir])
+assert(fs.dir_stack, start_stack)
 assert(popd(), tmpdir)
-assert(fs.dir_stack, [])
-assert(pwd() == tmpdir)
 assert(popd() == None)
+assert(fs.dir_stack, [])
 remove_file_assert(tmpdir_otto_neurath, tmpdir_otto)
 
 # TEST fs.exists/fs.touch/fs.remove - basic

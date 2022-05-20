@@ -27,7 +27,7 @@ func chdir(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, k
 		return nil, err
 	}
 
-	if pwd != "" {
+	if pwd != "" && pwd != peekDirStack().GoString() {
 		dirStack.Append(starlark.String(pwd))
 	}
 
