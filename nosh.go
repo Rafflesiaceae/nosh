@@ -57,6 +57,7 @@ func run(scriptPath string, src interface{}) {
 		"move":   fs.ModuleMove,
 		"mv":     fs.ModuleMove,
 		"os":     noshos.Module,
+		"pwd":    fs.ModulePwd,
 		"quit":   noshos.ModuleQuit,
 		"read":   fs.ModuleRead,
 		"remove": fs.ModuleRemove,

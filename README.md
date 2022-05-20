@@ -29,7 +29,6 @@ put 'em together, what can go wrong?
 - [X] getenv/setenv
 - [X] expand env
     + [ ] also expand ~ tilde ?
-- [ ] PWD
 - [X] sleep
 - [ ] dates
 - [ ] parallel
@@ -54,6 +53,7 @@ put 'em together, what can go wrong?
 - [ ] os.clipboard
 
 - [X] fs.chdir / cd
+- [X] fs.pwd / pwd
 - [X] fs.find
 - [ ] fs.join
 - [ ] fs.realpath
