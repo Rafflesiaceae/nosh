@@ -6,7 +6,14 @@ def remove_file_assert(*paths):
         remove(path, force=False)
         assert(exists(path, dir=False, file=True), xfail=True)
 
+# determine realpath to our tmpdir for cross-plat consistency
+git_worktree_toplevel = pwd()
 tmpdir = "/tmp/nosh-quicktest"
+remove(tmpdir, force=True)
+mkdir(tmpdir)
+cd(tmpdir)
+tmpdir = pwd()
+remove(tmpdir)
 
 # test assert
 assert(7+1, 8)
@@ -20,7 +27,7 @@ assert("{}".format("qwe"), "qwe")
 
 # test fs.find
 found_count = 0
-for x in fs.find("."):
+for x in fs.find(git_worktree_toplevel):
     found_count+=1
 assert(found_count >= 62, True)
 
@@ -70,21 +77,21 @@ else:
 assert(fs.join(tmpdir, "otto", "neurath"), tmpdir+sep+"otto"+sep+"neurath")
 
 # test fs.mkdir / fs.cd / fs.pwd
-test_dir = "/tmp/nosh-quicktest/testd"
+test_dir = fs.join(tmpdir, "testd")
 mkdir(test_dir)
 assert(exists(test_dir, dir=True))
 cd(test_dir)
 assert(pwd(), test_dir)
 write("file", "meep", force=False, mkdir=False)
 assert(read("file"), "meep")
-assert(read(test_dir+"/file"), "meep")
+assert(read(fs.join(test_dir, "file")), "meep")
 remove_file_assert(test_dir)
 
 # test fs.popd / fs.pwd
 popd(reset=True)
 assert(popd() == None)
-tmpdir_otto         = tmpdir+"/otto"
-tmpdir_otto_neurath = tmpdir+"/otto/neurath"
+tmpdir_otto         = fs.join(tmpdir, "/otto")
+tmpdir_otto_neurath = fs.join(tmpdir, "/otto/neurath")
 mkdir(tmpdir_otto         , mkdir=False)
 mkdir(tmpdir_otto_neurath , mkdir=False)
 assert(exists(tmpdir_otto         , dir=True))
@@ -93,23 +100,23 @@ assert(fs.dir_stack, [])
 cd(tmpdir)
 assert(fs.dir_stack, [])
 cd(tmpdir_otto)
-assert(fs.dir_stack, ["/tmp/nosh-quicktest"])
+assert(fs.dir_stack, [tmpdir])
 cd(tmpdir_otto_neurath)
-assert(fs.dir_stack, ["/tmp/nosh-quicktest", "/tmp/nosh-quicktest/otto"])
-assert(popd(), "/tmp/nosh-quicktest/otto")
-assert(fs.dir_stack, ["/tmp/nosh-quicktest"])
-assert(popd(), "/tmp/nosh-quicktest")
+assert(fs.dir_stack, [tmpdir, fs.join(tmpdir, "otto")])
+assert(popd(), fs.join(tmpdir, "otto"))
+assert(fs.dir_stack, [tmpdir])
+assert(popd(), tmpdir)
 assert(fs.dir_stack, [])
 assert(pwd() == tmpdir)
 assert(popd() == None)
-remove_file_assert(tmpdir_otto_neurath,tmpdir_otto)
+remove_file_assert(tmpdir_otto_neurath, tmpdir_otto)
 
 # test fs.exists/fs.touch/fs.remove - basic
-test_dir         = "/tmp/nosh-quicktest/testd/"
-test_dir_file    = "/tmp/nosh-quicktest/testd/testf"
-test_dir_file_2  = "/tmp/nosh-quicktest/testd/testf2"
+test_dir         = fs.join(tmpdir, "testd") + sep
+test_dir_file    = fs.join(tmpdir, "testd", "testf")
+test_dir_file_2  = fs.join(tmpdir, "testd", "testf2")
 
-touch(test_dir)
+touch(test_dir) # touching a dir is the same as mkdir @XXX should we keep this? seems a bit dirty
 assert(exists(test_dir, dir=True, file=False))
 touch(test_dir_file)
 assert(exists(test_dir_file, dir=False, file=True))
@@ -123,68 +130,93 @@ assert(exists(test_dir_file, dir=False, file=True), xfail=True)
 assert(exists(test_dir, dir=True, file=False), xfail=True)
 
 # test fs.remove - force (ignores missing files)
-test_dir_missing = "/tmp/nosh-quicktest/testd/missing_directory"
+test_dir_missing = fs.join(tmpdir, "testd", "missing_directory")
 remove(test_dir_missing, force=True)
 
 # test fs.write/fs.read
-remove("/tmp/otto_neurath", force=True)
-write(path="/tmp/otto_neurath", contents="oh\n")
-write(path="/tmp/otto_neurath", contents="woe\n", append=True)
-assert(read("/tmp/otto_neurath"), "oh\nwoe\n")
-write(path="/tmp/otto_subdir/otto_neurath", contents="soe\n")
-assert(read("/tmp/otto_subdir/otto_neurath"), "soe\n")
-remove_file_assert("/tmp/otto_neurath", "/tmp/otto_subdir")
+remove(tmpdir, force=True)
+otto = fs.join(tmpdir, "otto_neurath")
+write(path=otto, contents="oh\n")
+write(path=otto, contents="woe\n", append=True)
+assert(read(otto), "oh\nwoe\n")
+
+otto_subdir = fs.join(tmpdir, "subdir", "otto_neurath")
+write(path=otto_subdir, contents="soe\n")
+assert(read(otto_subdir), "soe\n")
+
+remove_file_assert(otto, otto_subdir)
 
 # test fs.copy
-remove("/tmp/otto_neurath_from", "/tmp/otto_neurath_to", "/tmp/otto_subdir", force=True)
-write(path="/tmp/otto_neurath_from", contents="neurath")
-copy("/tmp/otto_neurath_from", "/tmp/otto_neurath_to")
-assert(read("/tmp/otto_neurath_from"), "neurath")
-assert(read("/tmp/otto_neurath_to"), "neurath")
-write(path="/tmp/otto_neurath_from", contents="otto")
-copy("/tmp/otto_neurath_from", "/tmp/otto_neurath_to", force=True)
-assert(read("/tmp/otto_neurath_from"), "otto")
-assert(read("/tmp/otto_neurath_to"), "otto")
-copy("/tmp/otto_neurath_from", "/tmp/otto_subdir/otto_neurath_to")
-assert(read("/tmp/otto_subdir/otto_neurath_to"), "otto")
-remove_file_assert("/tmp/otto_neurath_from", "/tmp/otto_subdir")
+otto_from   = fs.join(tmpdir, "otto_neurath_from")
+otto_to     = fs.join(tmpdir, "otto_neurath_to")
+otto_subdir = fs.join(tmpdir, "subdir")
+
+remove(otto_from, otto_to, otto_subdir, force=True)
+write(path=otto_from, contents="neurath")
+copy(otto_from, otto_to)
+assert(read(otto_from), "neurath")
+assert(read(otto_to), "neurath")
+write(path=otto_from, contents="otto")
+copy(otto_from, otto_to, force=True)
+assert(read(otto_from), "otto")
+assert(read(otto_to), "otto")
+
+otto_subdir_to = fs.join(otto_subdir, "otto_neurath_to")
+copy(otto_from, otto_subdir_to)
+assert(read(otto_subdir_to), "otto")
+
+remove_file_assert(otto_from, otto_subdir)
 
 # test fs.move
-remove("/tmp/otto_neurath_from", "/tmp/otto_neurath_to", "/tmp/otto_subdir", force=True)
-write(path="/tmp/otto_neurath_from", contents="neurath")
-mv("/tmp/otto_neurath_from", "/tmp/otto_neurath_to")
-assert(not exists("/tmp/otto_neurath_from"))
-assert(read("/tmp/otto_neurath_to"), "neurath")
-write(path="/tmp/otto_neurath_from", contents="otto")
-mv("/tmp/otto_neurath_from", "/tmp/otto_neurath_to", force=True)
-assert(not exists("/tmp/otto_neurath_from"))
-assert(read("/tmp/otto_neurath_to"), "otto")
-write(path="/tmp/otto_neurath_from", contents="ottrath")
-mv("/tmp/otto_neurath_from", "/tmp/otto_subdir/otto_neurath_to")
-assert(read("/tmp/otto_subdir/otto_neurath_to"), "ottrath")
-remove_file_assert("/tmp/otto_neurath_to", "/tmp/otto_subdir")
+otto_from   = fs.join(tmpdir, "otto_neurath_from")
+otto_to     = fs.join(tmpdir, "otto_neurath_to")
+otto_subdir = fs.join(tmpdir, "subdir")
+
+remove(otto_from, otto_to, otto_subdir, force=True)
+write(path=otto_from, contents="neurath")
+mv(otto_from, otto_to)
+assert(not exists(otto_from))
+assert(read(otto_to), "neurath")
+write(path=otto_from, contents="otto")
+mv(otto_from, otto_to, force=True)
+assert(not exists(otto_from))
+assert(read(otto_to), "otto")
+write(path=otto_from, contents="ottrath")
+
+otto_subdir_to = fs.join(otto_subdir, "otto_neurath_to")
+mv(otto_from, otto_subdir_to)
+assert(read(otto_subdir_to), "ottrath")
+
+remove_file_assert(otto_to, otto_subdir)
 
 # test os.run - redir/append
-run(os.executable(), "-c", 'print("otto")', capture=["stderr->/tmp/otto_neurath"])
-run(os.executable(), "-c", 'print("neurath")', capture=["stderr->>/tmp/otto_neurath"])
-assert(exists("/tmp/otto_neurath", dir=False, file=True))
-assert(read("/tmp/otto_neurath"), "otto\nneurath\n")
-remove_file_assert("/tmp/otto_neurath")
+otto = fs.join(tmpdir, "otto_neurath")
+remove(otto, force=True)
+run(os.executable(), "-c", 'print("otto")', capture=["stderr->{}".format(otto)])
+run(os.executable(), "-c", 'print("neurath")', capture=["stderr->>{}".format(otto)])
+assert(exists(otto, dir=False, file=True))
+assert(read(otto), "otto\nneurath\n")
+remove_file_assert(otto)
 
 # test os.run - stdin
-write(path="/tmp/otto_neurath", contents="neurath")
-res = run(os.executable(), "-c", 'print(read("<stdin>"))', capture=["stderr", "stdin<-/tmp/otto_neurath"])
+otto = fs.join(tmpdir, "otto_neurath")
+write(path=otto, contents="neurath")
+res = run(os.executable(), "-c", 'print(read("<stdin>"))', capture=["stderr", "stdin<-{}".format(otto)])
 assert(res.stderr, "neurath\n")
-remove_file_assert("/tmp/otto_neurath")
+remove_file_assert(otto)
 
 # test json
-write(path="/tmp/otto_neurath", contents='{"otto": "neurath"}')
-raw = read("/tmp/otto_neurath")
+otto         = fs.join(tmpdir, "otto_neurath")
+otto_rewrite = fs.join(tmpdir, "otto_neurath_rewrite")
+
+remove(otto, otto_rewrite, force=True)
+write(path=otto, contents='{"otto": "neurath"}')
+raw = read(otto)
 obj = json.decode(raw)
-write(path="/tmp/otto_neurath_rewrite", contents=json.indent(json.encode(obj)).replace("\n", "").replace("\t", ""))
-raw_rewrite = read("/tmp/otto_neurath_rewrite")
+write(path=otto_rewrite, contents=json.indent(json.encode(obj)).replace("\n", "").replace("\t", ""))
+raw_rewrite = read(otto_rewrite)
 assert(raw, raw_rewrite)
-remove_file_assert("/tmp/otto_neurath", "/tmp/otto_neurath_rewrite")
+remove_file_assert(otto, otto_rewrite)
 
 
 print("quicktest passed successfully")

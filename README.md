@@ -66,6 +66,7 @@ put 'em together, what can go wrong?
 	+ [X] fs.is_file
 	+ [X] fs.is_dir
 - [X] fs.mkdir
+- [ ] fs.samefile
 - [ ] fs.stat
 - [X] fs.read
 - [X] fs.write
