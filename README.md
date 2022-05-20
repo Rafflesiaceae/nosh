@@ -58,9 +58,12 @@ put 'em together, what can go wrong?
 - [ ] fs.realpath
 - [ ] fs.basename
 - [ ] fs.symlink-handling
+- [X] fs.copy
+- [X] fs.move
 - [X] fs.exists
 	+ [X] fs.is_file
 	+ [X] fs.is_dir
+- [ ] fs.mkdir
 - [ ] fs.stat
 - [X] fs.read
 - [X] fs.write
