@@ -87,7 +87,7 @@ assert(read("file"), "meep")
 assert(read(fs.join(test_dir, "file")), "meep")
 remove_file_assert(test_dir)
 
-# TEST fs.popd / fs.pwd
+# TEST fs.popd / fs.pwd / dir.stack
 popd(reset=True)
 assert(popd() == None)
 tmpdir_otto         = fs.join(tmpdir, "/otto")
@@ -97,6 +97,14 @@ mkdir(tmpdir_otto_neurath , mkdir=False)
 assert(exists(tmpdir_otto         , dir=True))
 assert(exists(tmpdir_otto_neurath , dir=True))
 assert(fs.dir_stack, [])
+
+# we create a directory, cd to it, then remove it, to make sure the next `cd`
+# will fail it's `os.Getwd()` call to also cover cases where PWD's don't exist
+otto_missing_dir = fs.join(tmpdir, "soon_missing_dir")
+mkdir(otto_missing_dir)
+cd(otto_missing_dir)
+remove(otto_missing_dir)
+
 cd(tmpdir)
 assert(fs.dir_stack, [])
 cd(tmpdir_otto)
