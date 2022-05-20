@@ -5,6 +5,7 @@ jobs: # {{{
   build-and-quicktest: # {{{
 
     strategy:
+      fail-fast: false
       matrix:
         os:
           - ubuntu-18.04   # oldest available
