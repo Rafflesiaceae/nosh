@@ -15,9 +15,14 @@ func write(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, k
 		path     string
 		contents string
 		force    bool = true
+		mkdir    bool = true
 	)
 
-	if err := starlark.UnpackArgs("write", args, kwargs, "path", &path, "contents", &contents, "append?", &append, "force?", &force); err != nil {
+	if err := starlark.UnpackArgs("write", args, kwargs, "path", &path, "contents", &contents, "append?", &append, "force?", &force, "mkdir?", &mkdir); err != nil {
+		return nil, err
+	}
+
+	if err = AssertParentDir(path, mkdir); err != nil {
 		return nil, err
 	}
 

@@ -16,9 +16,14 @@ func copyImpl(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple
 		from  string
 		to    string
 		force bool = false
+		mkdir bool = true
 	)
 
-	if err = starlark.UnpackArgs("copy", args, kwargs, "from", &from, "to", &to, "force?", &force); err != nil {
+	if err = starlark.UnpackArgs("copy", args, kwargs, "from", &from, "to", &to, "force?", &force, "mkdir?", &mkdir); err != nil {
+		return nil, err
+	}
+
+	if err = AssertParentDir(to, mkdir); err != nil {
 		return nil, err
 	}
 

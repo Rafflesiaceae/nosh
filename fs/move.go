@@ -16,9 +16,10 @@ func move(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kw
 		from  string
 		to    string
 		force bool = false
+		mkdir bool = true
 	)
 
-	if err = starlark.UnpackArgs("move", args, kwargs, "from", &from, "to", &to, "force?", &force); err != nil {
+	if err = starlark.UnpackArgs("move", args, kwargs, "from", &from, "to", &to, "force?", &force, "mkdir?", &mkdir); err != nil {
 		return nil, err
 	}
 
@@ -26,6 +27,10 @@ func move(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kw
 		if _, err := os.Stat(to); !os.IsNotExist(err) {
 			return nil, fmt.Errorf("to path: \"%s\" already exist", to)
 		}
+	}
+
+	if err = AssertParentDir(to, mkdir); err != nil {
+		return nil, err
 	}
 
 	if err = os.Rename(from, to); err != nil {
