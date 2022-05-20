@@ -24,8 +24,9 @@ assert(found_count >= 62, True)
 
 # test os.distro
 res = os.distro()
-assert(res.os in ["linux", "netbsd", "openbsd", "darwin", "windows"])
+assert(res.os in ["linux", "windows", "darwin", "freebsd"])
 assert(len(res.arch) >= 3)
+assert(any((os.isLinux, os.isWindows, os.isDarwin, os.isFreebsd)))
 
 # test os.run
 res = run(os.executable(), "--version", capture=["stdout"])
@@ -55,7 +56,7 @@ assert(res.exitCode, 0)
 assert(exists(os.executable()))
 
 # test fs.path_separator / fs.path_list_separator
-if os.distro().os == "windows":
+if os.isWindows:
     assert(fs.path_separator, "\\")
     assert(fs.path_list_separator, ";")
 else:

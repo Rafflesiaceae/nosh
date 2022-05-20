@@ -2,6 +2,7 @@ package os
 
 import (
 	"os"
+	"runtime"
 	"time"
 
 	"go.starlark.net/starlark"
@@ -26,6 +27,10 @@ var Module = &starlarkstruct.Module{
 		"getenv":     ModuleGetenv,
 		"quit":       ModuleQuit,
 		"run":        ModuleRun,
+		"isDarwin":   starlark.Bool(runtime.GOOS == "darwin"),
+		"isFreebsd":  starlark.Bool(runtime.GOOS == "freebsd"),
+		"isLinux":    starlark.Bool(runtime.GOOS == "linux"),
+		"isWindows":  starlark.Bool(runtime.GOOS == "windows"),
 		"setenv":     ModuleSetenv,
 		"sleep":      starlark.NewBuiltin("os.sleep", sleep),
 	},
