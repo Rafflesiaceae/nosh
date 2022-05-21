@@ -8,10 +8,10 @@ def remove_file_assert(*paths):
 
 # determine realpath to our tmpdir for cross-plat consistency
 git_worktree_toplevel = pwd()
-tmpdir = "/tmp/nosh-quicktest"
-remove(tmpdir, force=True)
-mkdir(tmpdir)
-cd(tmpdir)
+tmpdir_og = "/tmp/nosh-quicktest"
+remove(tmpdir_og, force=True)
+mkdir(tmpdir_og)
+cd(tmpdir_og)
 tmpdir = pwd()
 remove(tmpdir)
 
@@ -220,6 +220,54 @@ mv(otto_from, otto_subdir_to)
 assert(read(otto_subdir_to), "ottrath")
 
 remove_file_assert(otto_to, otto_subdir)
+
+# TEST fs - Windows specifics
+if os.isWindows:
+    assert(cmp_path("/tmp/qwe/asd", "\\tmp\\qwe\\asd"))
+    assert(cmp_path("/tmp/qwe/asd", "\\tmp/qwe\\asd"))
+
+    ottos = [
+        tmpdir_og+"/otto/neurath",
+        tmpdir_og+"/otto\\neurath",
+        tmpdir_og+"\\otto\\neurath",
+        tmpdir_og+"/otto//neurath",
+        tmpdir_og+"\\otto\\neurath",
+
+        tmpdir_og+"\\neurath\\otto\\",
+        tmpdir_og+"/neurath\\otto",
+    ]
+
+    write(path=ottos[0], contents="neurath")
+    assert(read(ottos[1]), "neurath")
+
+    write(path=ottos[2], contents="otto", force=True)
+    assert(read(ottos[3]), "otto")
+
+    mv(ottos[2], ottos[0], force=True)
+    assert(read(ottos[1]), "otto")
+
+    write(path=ottos[4], contents="notto", force=True)
+    assert(read(ottos[4]), "notto")
+
+    copy(ottos[4], ottos[2], force=True)
+    assert(read(ottos[2]), "notto")
+
+    assert(not exists(ottos[5], dir=True))
+    assert(not exists(ottos[6], dir=True))
+    mkdir(ottos[5])
+    assert(exists(ottos[5], dir=True))
+    assert(exists(ottos[6], dir=True))
+
+    pre_cd = pwd()
+    cd(ottos[5])
+    popd()
+    assert(pwd(), pre_cd)
+
+    remove(ottos[6])
+    assert(not exists(ottos[5], dir=True))
+
+    remove(force=True, *ottos)
+
 
 # TEST os.run - redir/append
 otto = fs.join(tmpdir, "otto_neurath")
