@@ -23,6 +23,10 @@ func copyImpl(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple
 		return nil, err
 	}
 
+	if IsSamePath(from, to) {
+		return starlark.None, nil
+	}
+
 	if err = AssertParentDir(to, mkdir); err != nil {
 		return nil, err
 	}

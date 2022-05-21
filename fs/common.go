@@ -49,3 +49,7 @@ func IsPathWithin(smallerPath string, biggerPath string) (bool, error) {
 
 	return true, nil
 }
+
+func IsSamePath(firstPath string, secondPath string) bool {
+	return filepath.Clean(firstPath) == filepath.Clean(secondPath)
+}
