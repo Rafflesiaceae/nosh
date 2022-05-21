@@ -15,7 +15,7 @@ func pwd(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 
 	var pwd string
 	if pwd, err = os.Getwd(); err != nil {
-		return nil, err
+		return starlark.None, nil
 	}
 
 	return starlark.String(pwd), nil
