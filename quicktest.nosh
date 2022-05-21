@@ -136,7 +136,7 @@ test_dir         = fs.join(tmpdir, "testd") + sep
 test_dir_file    = fs.join(tmpdir, "testd", "testf")
 test_dir_file_2  = fs.join(tmpdir, "testd", "testf2")
 
-touch(test_dir) # touching a dir is the same as mkdir @XXX should we keep this? seems a bit dirty
+mkdir(test_dir)
 assert(exists(test_dir, dir=True, file=False))
 touch(test_dir_file)
 assert(exists(test_dir_file, dir=False, file=True))

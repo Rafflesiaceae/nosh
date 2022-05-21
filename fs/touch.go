@@ -1,6 +1,7 @@
 package fs
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -19,6 +20,11 @@ func touch(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, k
 	for _, path := range paths {
 		if _, err := os.Stat(path); !os.IsNotExist(err) {
 			continue
+		}
+
+		pathLastChar := path[len(path)-1]
+		if pathLastChar == os.PathSeparator || pathLastChar == '/' {
+			return nil, fmt.Errorf("can't touch a directory path: \"%s\"", path)
 		}
 
 		dir := filepath.Dir(path)
