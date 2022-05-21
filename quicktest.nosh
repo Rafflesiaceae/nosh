@@ -96,6 +96,7 @@ assert(exists(tmpdir_otto         , dir=True))
 assert(exists(tmpdir_otto_neurath , dir=True))
 
 cd(tmpdir)
+assert(fs.dir_stack, [], xfail=True)
 popd(reset=True)
 assert(popd() == None)
 assert(fs.dir_stack, [])
@@ -107,15 +108,26 @@ mkdir(missing_dir)
 cd(missing_dir)
 remove(missing_dir)
 
-if os.isDarwin: # os.Getwd() calls don't fail on MacOS
+cd(tmpdir)
+
+# @TODO unify dir_stack handling on cross platforms, there are currently
+# distinct platform behaviors that will make writing scripts behaving the same
+# relying on dir_stack a bit of nuisance
+
+# os.Getwd() calls don't fail on some platforms
+if os.isDarwin:
     start_stack = [tmpdir, missing_dir]
+elif os.isWindows:
+    start_stack = [tmpdir, missing_dir, tmpdir]
 else:
     start_stack = [tmpdir]
 
 # dir_stack only changes when a new path is pushed
-cd(tmpdir)
 assert(fs.dir_stack, start_stack)
 cd(tmpdir)
+
+if os.isDarwin:
+    start_stack += [tmpdir]
 assert(fs.dir_stack, start_stack)
 cd(tmpdir)
 assert(fs.dir_stack, start_stack)
@@ -127,8 +139,8 @@ assert(fs.dir_stack, start_stack + [fs.join(tmpdir, "otto")])
 assert(popd(), fs.join(tmpdir, "otto"))
 assert(fs.dir_stack, start_stack)
 assert(popd(), tmpdir)
-assert(popd() == None)
-assert(fs.dir_stack, [])
+
+assert(len(fs.dir_stack), len(start_stack)-1)
 remove_file_assert(tmpdir_otto_neurath, tmpdir_otto)
 
 # TEST fs.exists/fs.touch/fs.remove - basic
