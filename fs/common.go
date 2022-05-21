@@ -21,3 +21,31 @@ func AssertParentDir(path string, mkdir bool) error {
 
 	return nil
 }
+
+func IsPathWithin(smallerPath string, biggerPath string) (bool, error) {
+	biggerAbsPath, err := filepath.Abs(biggerPath)
+	if err != nil {
+		return false, err
+	}
+
+	smallerAbsPath, err := filepath.Abs(smallerPath)
+	if err != nil {
+		return false, err
+	}
+
+	if biggerAbsPath == smallerAbsPath {
+		return true, nil
+	}
+
+	biggerPathParts := strings.Split(biggerAbsPath, string(os.PathSeparator))
+	smallerPathParts := strings.Split(smallerAbsPath, string(os.PathSeparator))
+
+	lenBiggerPathParts := len(biggerPathParts)
+	for i, v := range smallerPathParts {
+		if i >= lenBiggerPathParts || v != biggerPathParts[i] {
+			return false, nil
+		}
+	}
+
+	return true, nil
+}
