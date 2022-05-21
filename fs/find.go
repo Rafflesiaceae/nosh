@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
-	"path"
 	"path/filepath"
 
 	"go.starlark.net/starlark"
@@ -137,15 +136,13 @@ func (it *fileIterator) advance() {
 		// @TODO @BUG also output further dirs, not only first dir and then only
 		// files from then on
 
-		// files, err := ioutil.ReadDir(e.AbsPath)
 		files, err := os.ReadDir(e.AbsPath)
 		if err != nil {
 			return
 		}
 
 		for _, f := range files {
-			// println(f)
-			ne, err := fromPath(path.Join(e.AbsPath, f.Name()))
+			ne, err := fromPath(filepath.Join(e.AbsPath, f.Name()))
 			if err != nil {
 				continue
 			}

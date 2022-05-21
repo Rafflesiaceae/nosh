@@ -1,7 +1,7 @@
 package fs
 
 import (
-	"path"
+	"path/filepath"
 
 	"github.com/Rafflesiaceae/nosh/internal"
 	"go.starlark.net/starlark"
@@ -16,5 +16,5 @@ func join(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kw
 		return starlark.Bool(false), err
 	}
 
-	return starlark.String(path.Join(paths...)), nil
+	return starlark.String(filepath.Join(paths...)), nil
 }

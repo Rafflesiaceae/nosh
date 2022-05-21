@@ -3,11 +3,12 @@ package fs
 import (
 	"fmt"
 	"os"
-	pathlib "path"
+	"path/filepath"
+	"strings"
 )
 
 func AssertParentDir(path string, mkdir bool) error {
-	parentDir := pathlib.Dir(path)
+	parentDir := filepath.Dir(path)
 	if _, err := os.Stat(parentDir); os.IsNotExist(err) {
 		if mkdir {
 			if err = os.MkdirAll(parentDir, os.ModePerm); err != nil {
