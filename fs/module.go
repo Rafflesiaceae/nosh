@@ -8,6 +8,9 @@ import (
 )
 
 var ModuleChdir = starlark.NewBuiltin("fs.chdir", chdir)
+var ModuleCmp = starlark.NewBuiltin("fs.cmp", cmp)
+var ModuleCmpFile = starlark.NewBuiltin("fs.cmp_file", cmpFile)
+var ModuleCmpPath = starlark.NewBuiltin("fs.cmp_path", cmpPath)
 var ModuleCopy = starlark.NewBuiltin("fs.copy", copyImpl)
 var ModuleExists = starlark.NewBuiltin("fs.exists", exists)
 var ModuleFind = starlark.NewBuiltin("fs.find", find)
@@ -28,6 +31,9 @@ func init() {
 		Name: "fs",
 		Members: starlark.StringDict{
 			"chdir":               ModuleChdir,
+			"cmp":                 ModuleCmp,
+			"cmp_file":            ModuleCmpFile,
+			"cmp_path":            ModuleCmpPath,
 			"copy":                ModuleCopy,
 			"dir_stack":           dirStack,
 			"exists":              ModuleExists,
