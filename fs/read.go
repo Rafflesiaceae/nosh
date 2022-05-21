@@ -5,14 +5,13 @@ import (
 	"os"
 
 	"go.starlark.net/starlark"
-	strlk "go.starlark.net/starlark"
 )
 
 func read(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
 	var err error
 
 	var (
-		path = strlk.String("")
+		path = starlark.String("")
 	)
 
 	if err = starlark.UnpackArgs("read", args, kwargs, "path", &path); err != nil {
