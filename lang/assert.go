@@ -11,10 +11,13 @@ func Assert(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, 
 	// @TODO return an AssertionError that also involves a backtrace
 	var err error
 
-	var x, y starlark.Comparable
-	var xfail starlark.Bool
+	var (
+		msg   string
+		x, y  starlark.Comparable
+		xfail starlark.Bool
+	)
 
-	if err := starlark.UnpackArgs("assert", args, kwargs, "x", &x, "y?", &y, "xfail?", &xfail); err != nil {
+	if err := starlark.UnpackArgs("assert", args, kwargs, "x", &x, "y?", &y, "msg?", &msg, "xfail?", &xfail); err != nil {
 		return nil, err
 	}
 
@@ -33,7 +36,11 @@ func Assert(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, 
 	}
 
 	if !truth {
-		return starlark.None, fmt.Errorf("%s != %s", x, y)
+		if msg == "" {
+			return starlark.None, fmt.Errorf("%s != %s", x, y)
+		} else {
+			return starlark.None, fmt.Errorf("%s; %s != %s", msg, x, y)
+		}
 	}
 
 	return starlark.None, nil

@@ -20,6 +20,9 @@ assert(7+1, 8)
 assert(1, 2, xfail=True)
 assert("neurath")
 assert(not "")
+# test msg-arg
+res = run(os.executable(), "-c", 'assert(False, msg="Neurath")', capture=["stderr"], check=False)
+assert(res.stderr, "Traceback (most recent call last):\n  -c:1:7: in <toplevel>\nError in assert: Neurath; False != True\n")
 
 # TEST starlark features
 ## @XXX f"...{foo}..." formatting strings don't work yet
