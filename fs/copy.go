@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"go.starlark.net/starlark"
 )
@@ -119,6 +120,18 @@ func CopyFile(from string, to string) error {
 	si, err := os.Stat(from)
 	if err != nil {
 		return err
+	}
+
+	if runtime.GOOS == "windows" {
+		// os.OpenFile fails on Windows when trying to overwrite existing
+		// read-only files, to prevent this we delete 'to' before
+
+		if _, err := os.Stat(to); !os.IsNotExist(err) {
+			if err = os.Remove(to); err != nil {
+				return err
+			}
+		}
+
 	}
 
 	// Create File
