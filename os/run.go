@@ -30,7 +30,36 @@ func (rr *RunResult) Freeze()               { /* @TODO */ }
 func (rr *RunResult) Hash() (uint32, error) { /* @TODO */ return 0, nil }
 func (rr *RunResult) Truth() strlk.Bool     { return true }
 func (rr *RunResult) Type() string          { return "RunResult" }
-func (rr *RunResult) String() string        { return fmt.Sprintf("%v (%d)", rr.Cmd, rr.ExitCode) }
+func (rr *RunResult) String() string {
+
+	// build capture summary
+	summary := make([]string, 0)
+	summary = append(summary, fmt.Sprintf("%d", rr.ExitCode))
+	if rr.Stdout != "" {
+		summary = append(summary, "<stdout>")
+	}
+	if rr.Stderr != "" {
+		summary = append(summary, "<stderr>")
+	}
+
+	// build arguments
+	args := make([]string, 0)
+	for _, arg := range rr.Cmd {
+		res := arg
+		if strings.ContainsAny(arg, " (){}[]*$") {
+			// add single-quotes around args if they contain special chars
+			res = fmt.Sprintf("'%s'", arg)
+		}
+
+		args = append(args, res)
+	}
+
+	return fmt.Sprintf(
+		"%s (%s)",
+		strings.Join(args, " "),
+		strings.Join(summary, ", "),
+	)
+}
 
 func (rr *RunResult) Attr(name string) (strlk.Value, error) {
 	return map[string]strlk.Value{
@@ -231,6 +260,7 @@ postStdinAssignment:
 		fmt.Fprintf(os.Stderr, "+ %s\n", cmd.String())
 	}
 	err = cmd.Run()
+	// @TODO do I need to flush on Windows here?
 
 	// Gather command results
 	var exitCode = 0
@@ -251,6 +281,7 @@ postStdinAssignment:
 	}
 
 	return &RunResult{
+		Cmd:      runArgs,
 		Stdout:   outStr,
 		Stderr:   errStr,
 		ExitCode: exitCode,
