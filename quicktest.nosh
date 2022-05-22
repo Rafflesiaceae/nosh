@@ -41,15 +41,26 @@ assert(len(res.arch) >= 3)
 assert(any((os.isLinux, os.isWindows, os.isDarwin, os.isFreebsd)))
 
 # TEST os.run
+# get (possibly surrounded by single-quotes) path to script
+res = run(os.executable(), capture=["stderr->devnull"], check=False)
+postfix = str(res)[-4:]
+assert(postfix, " (1)")
+exec_path = str(res)[:-4]
+assert(not exec_path.endswith(" "))
+assert(not exec_path.endswith("(1)"))
+
 res = run(os.executable(), "--version", capture=["stdout"])
+assert(str(res), exec_path+" --version (0, <stdout>)")
 assert(res.stdout, "0.0.1")
 assert(res.exitCode, 0)
 
 res = run(os.executable(), "--version", capture=["stdout->devnull"])
+assert(str(res), exec_path+" --version (0)")
 assert(res.stdout, "0.0.1", xfail=True)
 assert(res.exitCode, 0)
 
 res = run(os.executable(), "-c", 'print(args)', 'nosh_first_arg', 'nosh_second_arg', capture=["stderr"])
+assert(str(res), exec_path+" -c 'print(args)' nosh_first_arg nosh_second_arg (0, <stderr>)")
 assert(res.stderr, '["nosh_first_arg", "nosh_second_arg"]\n')
 assert(res.exitCode, 0)
 
