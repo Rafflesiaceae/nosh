@@ -115,6 +115,7 @@ func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 		capture               = &starlark.List{}
 		debug                 = false
 		env     *starlark.List
+		workdir string
 	)
 
 	var captureStderr, captureStdout bool
@@ -127,7 +128,7 @@ func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 		return nil, err
 	}
 
-	if err := starlark.UnpackArgs("run", nil, kwargs, "check?", &check, "capture?", &capture, "debug?", &debug, "env?", &env); err != nil {
+	if err := starlark.UnpackArgs("run", nil, kwargs, "check?", &check, "capture?", &capture, "debug?", &debug, "env?", &env, "workdir?", &workdir); err != nil {
 		return nil, err
 	}
 
@@ -179,6 +180,10 @@ func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 
 	// Setup command
 	cmd := exec.Command(runArgs[0], runArgs[1:]...)
+
+	if workdir != "" {
+		cmd.Dir = workdir
+	}
 
 	var stdoutBuf, stderrBuf bytes.Buffer
 	if captureStdout {
