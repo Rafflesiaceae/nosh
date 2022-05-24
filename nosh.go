@@ -64,6 +64,7 @@ func run(scriptPath string, src interface{}) {
 		"pwd":      fs.ModulePwd,
 		"quit":     noshos.ModuleQuit,
 		"read":     fs.ModuleRead,
+		"readdir":  fs.ModuleReaddir,
 		"remove":   fs.ModuleRemove,
 		"run":      noshos.ModuleRun,
 		"setenv":   noshos.ModuleSetenv,

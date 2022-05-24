@@ -52,7 +52,7 @@ func (fe *FileEntry) AttrNames() []string {
 	return []string{"kind", "path", "dir", "name", "is_symlink"}
 }
 
-func fromPath(p string) (*FileEntry, error) {
+func FromPath(p string) (*FileEntry, error) {
 	result := &FileEntry{}
 
 	fi, err := os.Lstat(p)
@@ -96,7 +96,7 @@ func (it *fileIterable) Type() string          { return "file-iterable" }
 func (it *fileIterable) String() string        { return fmt.Sprintf("file-iterable(%s)", it.path) }
 
 func (it *fileIterable) Iterate() strlk.Iterator {
-	initialPath, err := fromPath(it.path.GoString())
+	initialPath, err := FromPath(it.path.GoString())
 	if err != nil {
 		panic(err)
 	}
@@ -123,7 +123,7 @@ func (it *fileIterator) advance() {
 	e = it.l[it.i]
 
 	// info, err := os.Lstat(p.GoString())
-	// e, err := fromPath(e)
+	// e, err := FromPath(e)
 	// if err != nil {
 	// 	return
 	// 	// err = fn(root, nil, err)
@@ -142,7 +142,7 @@ func (it *fileIterator) advance() {
 		}
 
 		for _, f := range files {
-			ne, err := fromPath(filepath.Join(e.AbsPath, f.Name()))
+			ne, err := FromPath(filepath.Join(e.AbsPath, f.Name()))
 			if err != nil {
 				continue
 			}
