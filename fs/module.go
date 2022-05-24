@@ -20,6 +20,7 @@ var ModuleMove = starlark.NewBuiltin("fs.move", move)
 var ModulePopd = starlark.NewBuiltin("fs.popd", popd)
 var ModulePwd = starlark.NewBuiltin("fs.pwd", pwd)
 var ModuleRead = starlark.NewBuiltin("fs.read", read)
+var ModuleReaddir = starlark.NewBuiltin("fs.readdir", readdir)
 var ModuleRemove = starlark.NewBuiltin("fs.remove", remove)
 var ModuleTouch = starlark.NewBuiltin("fs.touch", touch)
 var ModuleWrite = starlark.NewBuiltin("fs.write", write)
@@ -46,6 +47,7 @@ func init() {
 			"popd":                ModulePopd,
 			"pwd":                 ModulePwd,
 			"read":                ModuleRead,
+			"readdir":             ModuleReaddir,
 			"remove":              ModuleRemove,
 			"touch":               ModuleTouch,
 			"write":               ModuleWrite,
