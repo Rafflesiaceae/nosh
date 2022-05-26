@@ -51,6 +51,7 @@ func run(scriptPath string, src interface{}) {
 		"exists":   fs.ModuleExists,
 		"exit":     noshOs.ModuleExit,
 		"expand":   noshOs.ModuleExpand,
+		"fail":     starlark.NewBuiltin("fail", lang.Fail),
 		"find":     fs.ModuleFind,
 		"fs":       fs.Module,
 		"getenv":   noshOs.ModuleGetenv,
@@ -79,11 +80,11 @@ func run(scriptPath string, src interface{}) {
 	switch err := err.(type) {
 	case *starlark.EvalError:
 		fmt.Fprintf(os.Stderr, "%s\n", err.Backtrace())
-		os.Exit(1)
+		noshOs.PresetExit()
 	case nil: // success
 	default:
 		fmt.Fprintf(os.Stderr, "Error in %v\n", err)
-		os.Exit(1)
+		noshOs.PresetExit()
 	}
 }
 

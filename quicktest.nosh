@@ -299,6 +299,19 @@ res = run(os.executable(), "-c", 'print(read("<stdin>"))', capture=["stderr", "s
 assert(res.stderr, "neurath\n")
 remove_file_assert(otto)
 
+# TEST fail
+res = run(os.executable(), "-c", 'fail("otto")', capture=["stderr"], check=False)
+assert(res.exit_code, 1)
+assert(res.stderr, "otto\n")
+
+res = run(os.executable(), "-c", 'fail("otto", exit_code=13, throw=False)', capture=["stderr"], check=False)
+assert(res.exit_code, 13)
+assert(res.stderr, "otto\n")
+
+res = run(os.executable(), "-c", 'fail("otto", 2, True)', capture=["stderr"], check=False)
+assert(res.exit_code, 2)
+assert(res.stderr, "Traceback (most recent call last):\n  -c:1:5: in <toplevel>\nError in fail: otto\n")
+
 # TEST json
 otto         = fs.join(tmpdir, "otto_neurath")
 otto_rewrite = fs.join(tmpdir, "otto_neurath_rewrite")
