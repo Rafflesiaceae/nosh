@@ -64,14 +64,14 @@ func (rr *RunResult) String() string {
 func (rr *RunResult) Attr(name string) (strlk.Value, error) {
 	return map[string]strlk.Value{
 		// @TODO Cmd
-		"stdout":   strlk.String(rr.Stdout),
-		"stderr":   strlk.String(rr.Stderr),
-		"exitCode": strlk.MakeInt(rr.ExitCode),
+		"stdout":    strlk.String(rr.Stdout),
+		"stderr":    strlk.String(rr.Stderr),
+		"exit_code": strlk.MakeInt(rr.ExitCode),
 	}[name], nil
 }
 
 func (fe *RunResult) AttrNames() []string {
-	return []string{"stdout", "stderr", "exitCode"}
+	return []string{"stdout", "stderr", "exit_code"}
 }
 
 // }}}
