@@ -52,17 +52,17 @@ assert(not exec_path.endswith("(1)"))
 res = run(os.executable(), "--version", capture=["stdout"])
 assert(str(res), exec_path+" --version (0, <stdout>)")
 assert(res.stdout, "0.0.1")
-assert(res.exitCode, 0)
+assert(res.exit_code, 0)
 
 res = run(os.executable(), "--version", capture=["stdout->devnull"])
 assert(str(res), exec_path+" --version (0)")
 assert(res.stdout, "0.0.1", xfail=True)
-assert(res.exitCode, 0)
+assert(res.exit_code, 0)
 
 res = run(os.executable(), "-c", 'print(args)', 'nosh_first_arg', 'nosh_second_arg', capture=["stderr"])
 assert(str(res), exec_path+" -c 'print(args)' nosh_first_arg nosh_second_arg (0, <stderr>)")
 assert(res.stderr, '["nosh_first_arg", "nosh_second_arg"]\n')
-assert(res.exitCode, 0)
+assert(res.exit_code, 0)
 
 # TEST setenv/getenv/expand
 setenv("nosh_test_env", "nosh_test_env_has_content")
@@ -73,7 +73,7 @@ assert(expand("$nosh_test_env"), "nosh_test_env_has_content")
 # TEST os.run & expand
 res = run(os.executable(), "-c", 'print(expand("$nosh_test_env"))', env=["nosh_test_env=nosh_test_env_has_content"], capture=["stderr"])
 assert(res.stderr, "nosh_test_env_has_content\n") # @TODO `print` should not write to stderr but stdout by default
-assert(res.exitCode, 0)
+assert(res.exit_code, 0)
 
 # TEST os.exists
 assert(exists(os.executable()))
