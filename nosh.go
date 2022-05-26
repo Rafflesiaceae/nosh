@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	noshos "github.com/Rafflesiaceae/nosh/os"
+	noshOs "github.com/Rafflesiaceae/nosh/os"
 
 	"github.com/Rafflesiaceae/nosh/fs"
 	"github.com/Rafflesiaceae/nosh/lang"
@@ -39,7 +39,7 @@ func run(scriptPath string, src interface{}) {
 
 	// Builtins
 	predeclared := starlark.StringDict{
-		"args":     noshos.Args,
+		"args":     noshOs.Args,
 		"assert":   starlark.NewBuiltin("assert", lang.Assert),
 		"cd":       fs.ModuleChdir,
 		"chdir":    fs.ModuleChdir,
@@ -49,25 +49,25 @@ func run(scriptPath string, src interface{}) {
 		"copy":     fs.ModuleCopy,
 		"cp":       fs.ModuleCopy,
 		"exists":   fs.ModuleExists,
-		"exit":     noshos.ModuleExit,
-		"expand":   noshos.ModuleExpand,
+		"exit":     noshOs.ModuleExit,
+		"expand":   noshOs.ModuleExpand,
 		"find":     fs.ModuleFind,
 		"fs":       fs.Module,
-		"getenv":   noshos.ModuleGetenv,
+		"getenv":   noshOs.ModuleGetenv,
 		"json":     json.Module,
 		"math":     math.Module,
 		"mkdir":    fs.ModuleMkdir,
 		"move":     fs.ModuleMove,
 		"mv":       fs.ModuleMove,
-		"os":       noshos.Module,
+		"os":       noshOs.Module,
 		"popd":     fs.ModulePopd,
 		"pwd":      fs.ModulePwd,
-		"quit":     noshos.ModuleQuit,
+		"quit":     noshOs.ModuleQuit,
 		"read":     fs.ModuleRead,
 		"readdir":  fs.ModuleReaddir,
 		"remove":   fs.ModuleRemove,
-		"run":      noshos.ModuleRun,
-		"setenv":   noshos.ModuleSetenv,
+		"run":      noshOs.ModuleRun,
+		"setenv":   noshOs.ModuleSetenv,
 		"touch":    fs.ModuleTouch,
 		"write":    fs.ModuleWrite,
 	}
@@ -100,7 +100,7 @@ func main() {
 			usage(1)
 		}
 		if len(args) > 2 {
-			noshos.SetArgs(args[2:])
+			noshOs.SetArgs(args[2:])
 		}
 		run("-c", args[1])
 	case "-h", "--help":
@@ -109,7 +109,7 @@ func main() {
 		version()
 	default:
 		if len(args) > 1 {
-			noshos.SetArgs(args[1:])
+			noshOs.SetArgs(args[1:])
 		}
 		run(args[0], nil)
 	}
