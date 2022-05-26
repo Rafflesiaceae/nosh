@@ -18,6 +18,10 @@ var ModuleSetenv = starlark.NewBuiltin("os.setenv", setenv)
 
 var Module *starlarkstruct.Module
 
+var (
+	PresetExitCode = 1
+)
+
 func init() {
 	runtimeGoOs := runtime.GOOS
 
@@ -40,6 +44,10 @@ func init() {
 			"sleep":      starlark.NewBuiltin("os.sleep", sleep),
 		},
 	}
+}
+
+func PresetExit() {
+	os.Exit(PresetExitCode)
 }
 
 func executable(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -90,7 +98,8 @@ func quit(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kw
 		panic(err)
 	}
 
-	os.Exit(exitCode)
+	PresetExitCode = exitCode
+	PresetExit()
 	return starlark.None, nil // @XXX noop
 }
 
