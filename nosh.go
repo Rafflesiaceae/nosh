@@ -51,7 +51,7 @@ func run(scriptPath string, src interface{}) {
 		"exists":   fs.ModuleExists,
 		"exit":     noshOs.ModuleExit,
 		"expand":   noshOs.ModuleExpand,
-		"fail":     starlark.NewBuiltin("fail", lang.Fail),
+		"fail":     starlark.NewBuiltin("fail", noshOs.Fail),
 		"find":     fs.ModuleFind,
 		"fs":       fs.Module,
 		"getenv":   noshOs.ModuleGetenv,
