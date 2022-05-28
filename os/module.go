@@ -9,18 +9,14 @@ import (
 	"go.starlark.net/starlarkstruct"
 )
 
-var ModuleExit = starlark.NewBuiltin("os.exit", quit)
+var ModuleExit = starlark.NewBuiltin("os.exit", exit)
 var ModuleExpand = starlark.NewBuiltin("os.expand", expand)
 var ModuleGetenv = starlark.NewBuiltin("os.getenv", getenv)
-var ModuleQuit = starlark.NewBuiltin("os.quit", quit)
+var ModuleQuit = starlark.NewBuiltin("os.quit", exit)
 var ModuleRun = starlark.NewBuiltin("os.run", run)
 var ModuleSetenv = starlark.NewBuiltin("os.setenv", setenv)
 
 var Module *starlarkstruct.Module
-
-var (
-	PresetExitCode = 1
-)
 
 func init() {
 	runtimeGoOs := runtime.GOOS
@@ -34,20 +30,16 @@ func init() {
 			"exit":       ModuleExit,
 			"expand":     ModuleExpand,
 			"getenv":     ModuleGetenv,
-			"quit":       ModuleQuit,
-			"run":        ModuleRun,
 			"isDarwin":   starlark.Bool(runtimeGoOs == "darwin"),
 			"isFreebsd":  starlark.Bool(runtimeGoOs == "freebsd"),
 			"isLinux":    starlark.Bool(runtimeGoOs == "linux"),
 			"isWindows":  starlark.Bool(runtimeGoOs == "windows"),
+			"quit":       ModuleQuit,
+			"run":        ModuleRun,
 			"setenv":     ModuleSetenv,
 			"sleep":      starlark.NewBuiltin("os.sleep", sleep),
 		},
 	}
-}
-
-func PresetExit() {
-	os.Exit(PresetExitCode)
 }
 
 func executable(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
@@ -90,17 +82,6 @@ func getenv(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, 
 
 		return starlark.NewList(listContent), nil
 	}
-}
-
-func quit(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
-	exitCode, err := starlark.AsInt32(args.Index(0))
-	if err != nil {
-		panic(err)
-	}
-
-	PresetExitCode = exitCode
-	PresetExit()
-	return starlark.None, nil // @XXX noop
 }
 
 func setenv(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwargs []starlark.Tuple) (starlark.Value, error) {
