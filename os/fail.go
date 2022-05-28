@@ -1,10 +1,9 @@
-package lang
+package os
 
 import (
 	"fmt"
 	"os"
 
-	noshOs "github.com/Rafflesiaceae/nosh/os"
 	"go.starlark.net/starlark"
 )
 
@@ -19,14 +18,14 @@ func Fail(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kw
 		return nil, err
 	}
 
-	noshOs.PresetExitCode = exitCode
+	PresetExitCode = exitCode
 
 	if throw {
 		return starlark.None, fmt.Errorf("%s", msg)
 	}
 
 	fmt.Fprintf(os.Stderr, "%s\n", msg)
-	noshOs.PresetExit()
+	PresetExit()
 
 	return starlark.None, nil // @XXX noop
 }
