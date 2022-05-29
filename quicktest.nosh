@@ -342,6 +342,25 @@ assert(res.stderr, "Traceback (most recent call last):\n  -c:1:5: in <toplevel>\
 assert(res.stdout, "")
 assert(res.exit_code, 2)
 
+# TEST defer
+otto = fs.join(tmpdir, "otto_neurath")
+res = run(os.executable(), "-c", r"""
+defer(lambda: write(path="{}", contents="otto-neurath"))
+
+result = "otto"
+def otto():
+    print("neurath")
+def toot():
+    return "toot"
+defer(lambda: print(toot()))
+defer(lambda: otto())
+defer(lambda: print(result))
+""".format(otto), capture=["stderr", "stdout"], check=False)
+assert(res.stderr, "")
+assert(res.stdout, "otto\nneurath\ntoot\n")
+assert(read(otto), "otto-neurath")
+remove(otto)
+
 # TEST json
 otto         = fs.join(tmpdir, "otto_neurath")
 otto_rewrite = fs.join(tmpdir, "otto_neurath_rewrite")

@@ -25,7 +25,7 @@ func Fail(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kw
 	}
 
 	fmt.Fprintf(os.Stderr, "%s\n", msg)
-	PresetExit()
+	PresetExit(thread)
 
 	return starlark.None, nil // @XXX noop
 }
