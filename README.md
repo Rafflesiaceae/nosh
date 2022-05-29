@@ -12,9 +12,10 @@ The idea sounds so simple, take `go` take `starlark` take `bash` take `python`,
 put 'em together, what can go wrong?
 
 ## Todo
+- [X] print / printf
 - [X] assert
 - [ ] regex
-- [ ] defer (?)
+- [X] defer
 - [ ] signal handling
 - [ ] set -e (NOTE: there's no exceptions in starlark)
 - [ ] set -x
@@ -32,9 +33,10 @@ put 'em together, what can go wrong?
 - [X] sleep
 - [ ] dates
 - [ ] parallel
-- [ ] args
+- [X] args
 - [ ] cli / argparse ?
 - [X] cli -c
+- [ ] tee
 
 - [X] os.run
 	+ [X] capture
@@ -72,15 +74,7 @@ put 'em together, what can go wrong?
 - [X] fs.write
 - [X] fs.remove
 - [X] fs.touch
-
-- [ ] sh.stat
-- [ ] sh.mv
-- [ ] sh.cp
-	+ [ ] -r
-- [ ] sh.mktemp
-- [ ] sh.printf
-- [ ] sh.echo
-- [ ] sh.tee
+- [ ] fs.mktemp
 
 - [ ] net.ping
 - [ ] net.curl
