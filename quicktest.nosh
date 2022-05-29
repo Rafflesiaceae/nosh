@@ -15,14 +15,44 @@ cd(tmpdir_og)
 tmpdir = pwd()
 remove(tmpdir)
 
+# get (possibly surrounded by single-quotes) path to script
+res = run(os.executable(), capture=["stderr->devnull"], check=False)
+postfix = str(res)[-4:]
+assert(postfix, " (1)")
+exec_path = str(res)[:-4]
+assert(not exec_path.endswith(" "))
+assert(not exec_path.endswith("(1)"))
+
+
+# TEST print
+res = run(os.executable(), "-c", r'print("otto", ["neurath"], stderr=False)', capture=["stderr", "stdout"])
+assert(res.stderr, "")
+assert(res.stdout, "otto [\"neurath\"]\n")
+
+res = run(os.executable(), "-c", r'print("otto-neurath", stderr=True)', capture=["stderr", "stdout"])
+assert(res.stderr, "otto-neurath\n")
+assert(res.stdout, "")
+
+# TEST printf
+res = run(os.executable(), "-c", r"""
+some_list = [1, "toot", {"otto": "neurath"}]
+printf(r"%s\n%d\n%s", "asd", 2, some_list)
+
+res = run(os.executable(), "-v", capture=["stdout"])
+printf(r"%s", res, stderr=True)
+""", capture=["stderr", "stdout"])
+assert(res.stderr, exec_path+" -v (0, <stdout>)")
+assert(res.stdout, "asd\\n2\\n[1, \"toot\", {\"otto\": \"neurath\"}]")
+
 # TEST assert
 assert(7+1, 8)
 assert(1, 2, xfail=True)
 assert("neurath")
 assert(not "")
 # test msg-arg
-res = run(os.executable(), "-c", 'assert(False, msg="Neurath")', capture=["stderr"], check=False)
+res = run(os.executable(), "-c", 'assert(False, msg="Neurath")', capture=["stderr", "stdout"], check=False)
 assert(res.stderr, "Traceback (most recent call last):\n  -c:1:7: in <toplevel>\nError in assert: Neurath; False != True\n")
+assert(res.stdout, "")
 
 # TEST starlark features
 ## @XXX f"...{foo}..." formatting strings don't work yet
@@ -41,28 +71,23 @@ assert(len(res.arch) >= 3)
 assert(any((os.isLinux, os.isWindows, os.isDarwin, os.isFreebsd)))
 
 # TEST os.run
-# get (possibly surrounded by single-quotes) path to script
-res = run(os.executable(), capture=["stderr->devnull"], check=False)
-postfix = str(res)[-4:]
-assert(postfix, " (1)")
-exec_path = str(res)[:-4]
-assert(not exec_path.endswith(" "))
-assert(not exec_path.endswith("(1)"))
-
-res = run(os.executable(), "--version", capture=["stdout"])
+res = run(os.executable(), "--version", capture=["stderr", "stdout"])
 assert(str(res), exec_path+" --version (0, <stdout>)")
 assert(res.stdout, "0.0.1")
+assert(res.stderr, "")
 assert(res.exit_code, 0)
 
-res = run(os.executable(), "--version", capture=["stdout->devnull"])
+res = run(os.executable(), "--version", capture=["stderr", "stdout->devnull"])
 assert(str(res), exec_path+" --version (0)")
 assert(res.stdout, "0.0.1", xfail=True)
+assert(res.stderr, "")
 assert(res.exit_code, 0)
 
-res = run(os.executable(), "-c", 'print(args)', 'nosh_first_arg', 'nosh_second_arg', capture=["stderr"])
-assert(str(res), exec_path+" -c 'print(args)' nosh_first_arg nosh_second_arg (0, <stderr>)")
-assert(res.stderr, '["nosh_first_arg", "nosh_second_arg"]\n')
+res = run(os.executable(), "-c", 'print(args)', 'nosh_first_arg', 'nosh_second_arg', capture=["stderr", "stdout"])
+assert(res.stderr, "")
+assert(str(res), exec_path+" -c 'print(args)' nosh_first_arg nosh_second_arg (0, <stdout>)")
 assert(res.exit_code, 0)
+assert(res.stdout, '["nosh_first_arg", "nosh_second_arg"]\n')
 
 # TEST setenv/getenv/expand
 setenv("nosh_test_env", "nosh_test_env_has_content")
@@ -71,8 +96,9 @@ assert(getenv("nosh_test_env"),  "nosh_test_env_has_content")
 assert(expand("$nosh_test_env"), "nosh_test_env_has_content")
 
 # TEST os.run & expand
-res = run(os.executable(), "-c", 'print(expand("$nosh_test_env"))', env=["nosh_test_env=nosh_test_env_has_content"], capture=["stderr"])
-assert(res.stderr, "nosh_test_env_has_content\n") # @TODO `print` should not write to stderr but stdout by default
+res = run(os.executable(), "-c", 'print(expand("$nosh_test_env"))', env=["nosh_test_env=nosh_test_env_has_content"], capture=["stderr", "stdout"])
+assert(res.stdout, "nosh_test_env_has_content\n") # @TODO `print` should not write to stderr but stdout by default
+assert(res.stderr, "")
 assert(res.exit_code, 0)
 
 # TEST os.exists
@@ -286,8 +312,8 @@ if os.isWindows:
 # TEST os.run - redir/append
 otto = fs.join(tmpdir, "otto_neurath")
 remove(otto, force=True)
-run(os.executable(), "-c", 'print("otto")', capture=["stderr->{}".format(otto)])
-run(os.executable(), "-c", 'print("neurath")', capture=["stderr->>{}".format(otto)])
+run(os.executable(), "-c", 'print("otto")', capture=["stdout->{}".format(otto)])
+run(os.executable(), "-c", 'print("neurath")', capture=["stdout->>{}".format(otto)])
 assert(exists(otto, dir=False, file=True))
 assert(read(otto), "otto\nneurath\n")
 remove_file_assert(otto)
@@ -295,22 +321,26 @@ remove_file_assert(otto)
 # TEST os.run - stdin
 otto = fs.join(tmpdir, "otto_neurath")
 write(path=otto, contents="neurath")
-res = run(os.executable(), "-c", 'print(read("<stdin>"))', capture=["stderr", "stdin<-{}".format(otto)])
-assert(res.stderr, "neurath\n")
+res = run(os.executable(), "-c", 'print(read("<stdin>"))', capture=["stderr", "stdout", "stdin<-{}".format(otto)])
+assert(res.stdout, "neurath\n")
+assert(res.stderr, "")
 remove_file_assert(otto)
 
 # TEST fail
-res = run(os.executable(), "-c", 'fail("otto")', capture=["stderr"], check=False)
+res = run(os.executable(), "-c", 'fail("otto")', capture=["stderr", "stdout"], check=False)
+assert(res.stderr, "otto\n")
+assert(res.stdout, "")
 assert(res.exit_code, 1)
-assert(res.stderr, "otto\n")
 
-res = run(os.executable(), "-c", 'fail("otto", exit_code=13, throw=False)', capture=["stderr"], check=False)
+res = run(os.executable(), "-c", 'fail("otto", exit_code=13, throw=False)', capture=["stderr", "stdout"], check=False)
+assert(res.stderr, "otto\n")
+assert(res.stdout, "")
 assert(res.exit_code, 13)
-assert(res.stderr, "otto\n")
 
-res = run(os.executable(), "-c", 'fail("otto", 2, True)', capture=["stderr"], check=False)
-assert(res.exit_code, 2)
+res = run(os.executable(), "-c", 'fail("otto", 2, True)', capture=["stderr", "stdout"], check=False)
 assert(res.stderr, "Traceback (most recent call last):\n  -c:1:5: in <toplevel>\nError in fail: otto\n")
+assert(res.stdout, "")
+assert(res.exit_code, 2)
 
 # TEST json
 otto         = fs.join(tmpdir, "otto_neurath")
