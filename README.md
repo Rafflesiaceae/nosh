@@ -8,7 +8,7 @@ Maybe eventually useful to at least prototype cross-plat shell-tasks instead of
 having to write `.bat` and `.sh` side-by-side and ontop trying to balance `bash`
 version differences.
 
-The idea sounds so simple, take `go` take `starlark` take `bash` take `python`,
+The idea sounds so simple, take `go` take `starlark` look towards `bash` look towards `python`,
 put 'em together, what can go wrong?
 
 ## Todo
