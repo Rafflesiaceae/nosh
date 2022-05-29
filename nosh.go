@@ -48,6 +48,7 @@ func run(scriptPath string, src interface{}) {
 		"cmp_path": fs.ModuleCmpPath,
 		"copy":     fs.ModuleCopy,
 		"cp":       fs.ModuleCopy,
+		"defer":    starlark.NewBuiltin("defer", lang.Defer),
 		"exists":   fs.ModuleExists,
 		"exit":     noshOs.ModuleExit,
 		"expand":   noshOs.ModuleExpand,
@@ -88,12 +89,15 @@ func run(scriptPath string, src interface{}) {
 	switch err := err.(type) {
 	case *starlark.EvalError:
 		fmt.Fprintf(os.Stderr, "%s\n", err.Backtrace())
-		noshOs.PresetExit()
+		noshOs.PresetExit(thread)
 	case nil: // success
 	default:
 		fmt.Fprintf(os.Stderr, "Error in %v\n", err)
-		noshOs.PresetExit()
+		noshOs.PresetExit(thread)
 	}
+
+	noshOs.PresetExitCode = 0
+	noshOs.PresetExit(thread)
 }
 
 func main() {
