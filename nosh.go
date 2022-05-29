@@ -62,6 +62,8 @@ func run(scriptPath string, src interface{}) {
 		"mv":       fs.ModuleMove,
 		"os":       noshOs.Module,
 		"popd":     fs.ModulePopd,
+		"print":    starlark.NewBuiltin("print", noshOs.Print),
+		"printf":   starlark.NewBuiltin("printf", noshOs.Printf),
 		"pwd":      fs.ModulePwd,
 		"quit":     noshOs.ModuleQuit,
 		"read":     fs.ModuleRead,
@@ -74,7 +76,13 @@ func run(scriptPath string, src interface{}) {
 	}
 
 	// Execute Starlark program in a file.
-	thread := &starlark.Thread{Name: "nosh"}
+	thread := &starlark.Thread{
+		Name: "nosh",
+		Print: func(thread *starlark.Thread, msg string) {
+			// fallback, os.Print should always take precedence over this
+			fmt.Fprintln(os.Stdout, msg)
+		},
+	}
 	_, err := starlark.ExecFile(thread, scriptPath, src, predeclared)
 
 	switch err := err.(type) {
