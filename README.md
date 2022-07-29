@@ -59,8 +59,8 @@ put 'em together, what can go wrong?
 - [X] fs.pwd / pwd
 - [X] fs.find
 - [X] fs.join
-- [ ] fs.realpath
-- [ ] fs.basename
+- [X] fs.realpath
+- [X] fs.basename
 - [ ] fs.symlink-handling
 - [X] fs.copy
 - [X] fs.move
