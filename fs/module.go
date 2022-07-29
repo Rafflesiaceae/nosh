@@ -47,6 +47,7 @@ func init() {
 			"join":                ModuleJoin,
 			"mkdir":               ModuleMkdir,
 			"move":                ModuleMove,
+			"parse":               starlark.NewBuiltin("fs.parse", parse),
 			"path_list_separator": starlark.String(os.PathListSeparator),
 			"path_separator":      starlark.String(os.PathSeparator),
 			"popd":                ModulePopd,

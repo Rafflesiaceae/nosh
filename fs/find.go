@@ -10,50 +10,74 @@ import (
 	strlk "go.starlark.net/starlark"
 )
 
-// {{{1 FileEntry
-type FileEntryKind string
+// {{{1 StatFileEntry
+type StatFileEntryKind string
 
 const (
-	FileEntryDir  FileEntryKind = "Dir"
-	FileEntryFile               = "File"
+	FileEntryDir  StatFileEntryKind = "Dir"
+	FileEntryFile                   = "File"
 )
 
-type FileEntry struct {
-	Kind          FileEntryKind
-	AbsPath       string
-	BaseDir       string
-	BaseName      string
+type StatFileEntry struct {
+	FileEntry
+	Kind StatFileEntryKind
+	// AbsPath       string
+	// BaseDir       string
+	// BaseName      string
 	IsSymlink     bool
 	SymlinkTarget string
 }
 
 var (
-	_ strlk.Value    = &FileEntry{}
-	_ strlk.HasAttrs = &FileEntry{}
+	_ strlk.Value    = &StatFileEntry{}
+	_ strlk.HasAttrs = &StatFileEntry{}
 )
 
-func (fe *FileEntry) Freeze()               { /* @TODO */ }
-func (fe *FileEntry) Hash() (uint32, error) { /* @TODO */ return 0, nil }
-func (fe *FileEntry) Truth() strlk.Bool     { return true }
-func (fe *FileEntry) Type() string          { return "FileEntry" }
-func (fe *FileEntry) String() string        { return fe.AbsPath }
+func (fe *StatFileEntry) Freeze()               { /* @TODO */ }
+func (fe *StatFileEntry) Hash() (uint32, error) { /* @TODO */ return 0, nil }
+func (fe *StatFileEntry) Truth() strlk.Bool     { return true }
+func (fe *StatFileEntry) Type() string          { return "StatFileEntry" }
+func (fe *StatFileEntry) String() string        { return fe.AbsPath }
 
-func (fe *FileEntry) Attr(name string) (strlk.Value, error) {
-	return map[string]strlk.Value{
-		"kind":       strlk.String(fe.Kind),
-		"path":       strlk.String(fe.AbsPath),
-		"dir":        strlk.String(fe.BaseDir),
-		"name":       strlk.String(fe.BaseName),
-		"is_symlink": strlk.Bool(fe.IsSymlink),
-	}[name], nil
+func (fe *StatFileEntry) Attr(name string) (result strlk.Value, err error) {
+	switch name {
+	case "abspath":
+		return strlk.String(fe.AbsPath), nil
+	case "basename":
+		return strlk.String(fe.BaseName), nil
+	case "dir":
+		return strlk.String(fe.Dir), nil
+	case "ext":
+		return strlk.String(fe.Ext), nil
+	case "name":
+		return strlk.String(fe.Name), nil
+	case "path":
+		return strlk.String(fe.Path), nil
+
+	case "kind":
+		return strlk.String(fe.Kind), nil
+	case "is_symlink":
+		return strlk.Bool(fe.IsSymlink), nil
+	}
+	return starlark.None, fmt.Errorf("Unknown attr: %s", name)
 }
 
-func (fe *FileEntry) AttrNames() []string {
-	return []string{"kind", "path", "dir", "name", "is_symlink"}
+func (fe *StatFileEntry) AttrNames() []string {
+	return []string{
+		"abspath",
+		"basename",
+		"dir",
+		"ext",
+		"name",
+		"path",
+
+		"kind",
+		"is_symlink",
+	}
 }
 
-func FromPath(p string) (*FileEntry, error) {
-	result := &FileEntry{}
+func FromPath(p string) (*StatFileEntry, error) {
+	result := &StatFileEntry{}
 
 	fi, err := os.Lstat(p)
 	if err != nil {
@@ -66,13 +90,7 @@ func FromPath(p string) (*FileEntry, error) {
 		result.Kind = FileEntryFile
 	}
 
-	result.AbsPath, err = filepath.Abs(p)
-	if err != nil {
-		return nil, err
-	}
-
-	result.BaseName = filepath.Base(p)
-	result.BaseDir = filepath.Dir(p)
+	_ = result.FileEntry.Init(p)
 
 	if fi.Mode()&fs.ModeSymlink != 0 {
 		result.IsSymlink = true
@@ -103,14 +121,14 @@ func (it *fileIterable) Iterate() strlk.Iterator {
 
 	return &fileIterator{
 		path: it.path,
-		l:    []*FileEntry{initialPath},
+		l:    []*StatFileEntry{initialPath},
 	}
 }
 
 // {{{1 fileIterator
 type fileIterator struct {
 	path strlk.String
-	l    []*FileEntry
+	l    []*StatFileEntry
 	i    int
 }
 
@@ -119,7 +137,7 @@ var (
 )
 
 func (it *fileIterator) advance() {
-	var e *FileEntry
+	var e *StatFileEntry
 	e = it.l[it.i]
 
 	// info, err := os.Lstat(p.GoString())

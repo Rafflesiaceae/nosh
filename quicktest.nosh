@@ -116,6 +116,15 @@ else:
 # TEST fs.join
 assert(fs.join(tmpdir, "otto", "neurath"), tmpdir+sep+"otto"+sep+"neurath")
 
+# TEST fs.parse
+test_file = fs.join(tmpdir, "does-not-exist.txt")
+assert(exists(test_file, dir=False, file=True), xfail=True)
+test_file = fs.parse(test_file)
+assert(test_file.basename == "does-not-exist")
+assert(test_file.name == "does-not-exist.txt")
+assert(test_file.ext == ".txt")
+assert(test_file.dir == tmpdir)
+
 # TEST fs.mkdir / fs.cd / fs.pwd
 test_dir = fs.join(tmpdir, "testd")
 mkdir(test_dir)
