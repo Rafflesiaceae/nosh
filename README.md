@@ -2,14 +2,12 @@
 
 [![CI](https://github.com/Rafflesiaceae/nosh/actions/workflows/ci.yml/badge.svg)](https://github.com/Rafflesiaceae/nosh/actions/workflows/ci.yml)
 
-A cross-platform "shell", maybe, eventually, but not really.
+Take `starlark`, take `go` and wrap them into a cross-plat shell of sorts.
 
-Maybe eventually useful to at least prototype cross-plat shell-tasks instead of
-having to write `.bat` and `.sh` side-by-side and ontop trying to balance `bash`
-version differences.
+Motivation is to do basic shell tasks in `bazel` with something cross-plat, easy
+to provision via `bazel` and which tastes like `starlark`.
 
-The idea sounds so simple, take `go` take `starlark` look towards `bash` look towards `python`,
-put 'em together, what can go wrong?
+See [./quicktest.nosh](./quicktest.nosh) for examples.
 
 ## Todo
 - [X] print / printf
