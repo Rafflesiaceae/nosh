@@ -76,7 +76,6 @@ func run(scriptPath string, src interface{}) {
 		"write":    fs.ModuleWrite,
 	}
 
-	// Execute Starlark program in a file.
 	thread := &starlark.Thread{
 		Name: "nosh",
 		Print: func(thread *starlark.Thread, msg string) {
