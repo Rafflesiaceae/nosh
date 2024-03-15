@@ -8,8 +8,16 @@ import (
 )
 
 var (
-	PresetExitCode = 0
+	PresetExitCode       = 0
+	hasSetPresetExitCode = false
 )
+
+func SetPresetExitCode(exitCode int) {
+	if !hasSetPresetExitCode {
+		PresetExitCode = exitCode
+		hasSetPresetExitCode = true
+	}
+}
 
 func PresetExit(thread *starlark.Thread) {
 	var err error
