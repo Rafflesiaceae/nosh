@@ -2,7 +2,7 @@ package fs
 
 import (
 	"bytes"
-	"io/ioutil"
+	"os"
 
 	"go.starlark.net/starlark"
 )
@@ -20,16 +20,15 @@ func cmp(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 	}
 
 	// @TODO impl dir comparing
-
 	// @TODO optimize w/o reading everything into RAM
 	var (
 		firstContents  []byte
 		secondContents []byte
 	)
-	if firstContents, err = ioutil.ReadFile(firstPath); err != nil {
+	if firstContents, err = os.ReadFile(firstPath); err != nil {
 		return nil, err
 	}
-	if secondContents, err = ioutil.ReadFile(secondPath); err != nil {
+	if secondContents, err = os.ReadFile(secondPath); err != nil {
 		return nil, err
 	}
 

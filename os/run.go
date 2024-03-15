@@ -186,47 +186,50 @@ func run(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kwa
 	}
 
 	var stdoutBuf, stderrBuf bytes.Buffer
-	if captureStdout {
-		cmd.Stdout = &stdoutBuf
-	} else if redirStdout != "" && redirStdout == "devnull" {
-		cmd.Stdout = io.Discard
-	} else if redirStdout != "" {
-		var f *os.File
-		flags := os.O_RDWR | os.O_CREATE
-		if appendStdout {
-			flags = flags | os.O_APPEND
+	{ // Setup fds
+		if captureStdout {
+			cmd.Stdout = &stdoutBuf
+		} else if redirStdout != "" && redirStdout == "devnull" {
+			cmd.Stdout = io.Discard
+		} else if redirStdout != "" {
+			var f *os.File
+			flags := os.O_RDWR | os.O_CREATE
+			if appendStdout {
+				flags = flags | os.O_APPEND
+			} else {
+				flags = flags | os.O_TRUNC
+			}
+			f, err = os.OpenFile(redirStdout, flags, 0755)
+			if err != nil {
+				return nil, err
+			}
+			defer f.Close()
+			cmd.Stdout = f
 		} else {
-			flags = flags | os.O_TRUNC
+			cmd.Stdout = os.Stdout
 		}
-		f, err = os.OpenFile(redirStdout, flags, 0755)
-		if err != nil {
-			return nil, err
-		}
-		defer f.Close()
-		cmd.Stdout = f
-	} else {
-		cmd.Stdout = os.Stdout
-	}
-	if captureStderr {
-		cmd.Stderr = &stderrBuf
-	} else if redirStderr != "" && redirStderr == "devnull" {
-		cmd.Stderr = io.Discard
-	} else if redirStderr != "" {
-		var f *os.File
-		flags := os.O_RDWR | os.O_CREATE
-		if appendStderr {
-			flags = flags | os.O_APPEND
+
+		if captureStderr {
+			cmd.Stderr = &stderrBuf
+		} else if redirStderr != "" && redirStderr == "devnull" {
+			cmd.Stderr = io.Discard
+		} else if redirStderr != "" {
+			var f *os.File
+			flags := os.O_RDWR | os.O_CREATE
+			if appendStderr {
+				flags = flags | os.O_APPEND
+			} else {
+				flags = flags | os.O_TRUNC
+			}
+			f, err = os.OpenFile(redirStderr, flags, 0755)
+			if err != nil {
+				return nil, err
+			}
+			defer f.Close()
+			cmd.Stderr = f
 		} else {
-			flags = flags | os.O_TRUNC
+			cmd.Stderr = os.Stderr
 		}
-		f, err = os.OpenFile(redirStderr, flags, 0755)
-		if err != nil {
-			return nil, err
-		}
-		defer f.Close()
-		cmd.Stderr = f
-	} else {
-		cmd.Stderr = os.Stderr
 	}
 
 	var stdinFile *os.File
