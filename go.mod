@@ -1,6 +1,6 @@
 module github.com/Rafflesiaceae/nosh
 
-go 1.18
+go 1.22.1
 
 require go.starlark.net v0.0.0-20220328144851-d1966c6b9fcd
 
