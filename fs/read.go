@@ -1,7 +1,7 @@
 package fs
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 
 	"go.starlark.net/starlark"
@@ -20,14 +20,14 @@ func read(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kw
 
 	switch path {
 	case "<stdin>":
-		bytes, err := ioutil.ReadAll(os.Stdin)
+		bytes, err := io.ReadAll(os.Stdin)
 		if err == nil {
 
 		}
 
 		return starlark.String(bytes), nil
 	default:
-		contents, err := ioutil.ReadFile(path.GoString())
+		contents, err := os.ReadFile(path.GoString())
 		if err != nil {
 			return nil, err
 		}
