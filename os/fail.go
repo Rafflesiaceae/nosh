@@ -18,7 +18,7 @@ func Fail(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kw
 		return nil, err
 	}
 
-	PresetExitCode = exitCode
+	SetPresetExitCode(exitCode)
 
 	if throw {
 		return starlark.None, fmt.Errorf("%s", msg)

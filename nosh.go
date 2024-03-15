@@ -11,8 +11,8 @@ import (
 
 	"go.starlark.net/lib/json"
 	"go.starlark.net/lib/math"
-	"go.starlark.net/resolve"
 	"go.starlark.net/starlark"
+	"go.starlark.net/syntax"
 )
 
 func usage(retCode int) {
@@ -31,11 +31,6 @@ func version() {
 }
 
 func run(scriptPath string, src interface{}) {
-
-	resolve.AllowGlobalReassign = true
-	resolve.AllowRecursion = true
-	resolve.AllowSet = true
-	// resolve.LoadBindsGlobally = true
 
 	// Builtins
 	predeclared := starlark.StringDict{
@@ -83,19 +78,31 @@ func run(scriptPath string, src interface{}) {
 			fmt.Fprintln(os.Stdout, msg)
 		},
 	}
-	_, err := starlark.ExecFile(thread, scriptPath, src, predeclared)
+
+	_, err := starlark.ExecFileOptions(
+		&syntax.FileOptions{
+			Set:             true,
+			TopLevelControl: true,
+			While:           true,
+			GlobalReassign:  true,
+			Recursion:       true,
+		},
+		thread, scriptPath, src, predeclared,
+	)
 
 	switch err := err.(type) {
 	case *starlark.EvalError:
 		fmt.Fprintf(os.Stderr, "%s\n", err.Backtrace())
+		noshOs.SetPresetExitCode(1)
 		noshOs.PresetExit(thread)
 	case nil: // success
 	default:
 		fmt.Fprintf(os.Stderr, "Error in %v\n", err)
+		noshOs.SetPresetExitCode(1)
 		noshOs.PresetExit(thread)
 	}
 
-	noshOs.PresetExitCode = 0
+	noshOs.SetPresetExitCode(0)
 	noshOs.PresetExit(thread)
 }
 

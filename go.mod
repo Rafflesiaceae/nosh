@@ -2,6 +2,6 @@ module github.com/Rafflesiaceae/nosh
 
 go 1.22.1
 
-require go.starlark.net v0.0.0-20220328144851-d1966c6b9fcd
+require go.starlark.net v0.0.0-20240314022150-ee8ed142361c
 
-require golang.org/x/sys v0.0.0-20200930185726-fdedc70b468f // indirect
+require golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect
