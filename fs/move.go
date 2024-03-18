@@ -13,13 +13,13 @@ func move(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kw
 	var err error
 
 	var (
-		from  string
-		to    string
-		force bool = false
-		mkdir bool = true
+		from   string
+		to     string
+		force  bool = false
+		mkdirs bool = false
 	)
 
-	if err = starlark.UnpackArgs("move", args, kwargs, "from", &from, "to", &to, "force?", &force, "mkdir?", &mkdir); err != nil {
+	if err = starlark.UnpackArgs("move", args, kwargs, "from", &from, "to", &to, "force?", &force, "mkdirs?", &mkdirs); err != nil {
 		return nil, err
 	}
 
@@ -33,7 +33,7 @@ func move(thread *starlark.Thread, fn *starlark.Builtin, args starlark.Tuple, kw
 		return starlark.None, nil
 	}
 
-	if err = AssertParentDir(to, mkdir); err != nil {
+	if err = AssertParentDir(to, mkdirs); err != nil {
 		return nil, err
 	}
 
