@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/user"
 
 	noshOs "github.com/Rafflesiaceae/nosh/os"
 
@@ -70,6 +71,10 @@ func run(scriptPath string, src interface{}) {
 		"touch":    fs.ModuleTouch,
 		"write":    fs.ModuleWrite,
 	}
+
+	// Injected envs
+	user, _ := user.Current()
+	os.Setenv("UID", user.Uid) // @TODO move to os/user.go
 
 	thread := &starlark.Thread{
 		Name: "nosh",
