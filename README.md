@@ -73,6 +73,7 @@ See [./quicktest.nosh](./quicktest.nosh) for examples.
 - [X] fs.remove
 - [X] fs.touch
 - [ ] fs.mktemp
+- [X] fs.watch
 
 - [ ] net.ping
 - [ ] net.curl

@@ -23,6 +23,7 @@ var ModuleRead = starlark.NewBuiltin("fs.read", read)
 var ModuleReaddir = starlark.NewBuiltin("fs.readdir", readdir)
 var ModuleRemove = starlark.NewBuiltin("fs.remove", remove)
 var ModuleTouch = starlark.NewBuiltin("fs.touch", touch)
+var ModuleWatch = starlark.NewBuiltin("fs.watch", watch)
 var ModuleWrite = starlark.NewBuiltin("fs.write", write)
 
 var Module *starlarkstruct.Module
@@ -60,6 +61,7 @@ func init() {
 			"split_list":          starlark.NewBuiltin("fs.split_list", splitList),
 			"to_slash":            starlark.NewBuiltin("fs.to_slash", toSlash),
 			"touch":               ModuleTouch,
+			"watch":               ModuleWatch,
 			"write":               ModuleWrite,
 		},
 	}
