@@ -15,6 +15,7 @@ var ModuleGetenv = starlark.NewBuiltin("os.getenv", getenv)
 var ModuleQuit = starlark.NewBuiltin("os.quit", exit)
 var ModuleRun = starlark.NewBuiltin("os.run", run)
 var ModuleSetenv = starlark.NewBuiltin("os.setenv", setenv)
+var ModuleSleep = starlark.NewBuiltin("os.sleep", sleep)
 
 var Module *starlarkstruct.Module
 
@@ -37,7 +38,7 @@ func init() {
 			"quit":       ModuleQuit,
 			"run":        ModuleRun,
 			"setenv":     ModuleSetenv,
-			"sleep":      starlark.NewBuiltin("os.sleep", sleep),
+			"sleep":      ModuleSleep,
 		},
 	}
 }

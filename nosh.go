@@ -66,6 +66,7 @@ func run(scriptPath string, src interface{}) {
 		"remove":   fs.ModuleRemove,
 		"run":      noshOs.ModuleRun,
 		"setenv":   noshOs.ModuleSetenv,
+		"sleep":    noshOs.ModuleSleep,
 		"touch":    fs.ModuleTouch,
 		"write":    fs.ModuleWrite,
 	}
