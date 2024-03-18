@@ -265,7 +265,7 @@ assert(read(otto_to), "otto")
 write(path=otto_from, contents="ottrath")
 
 otto_subdir_to = fs.join(otto_subdir, "otto_neurath_to")
-mv(otto_from, otto_subdir_to)
+mv(otto_from, otto_subdir_to, mkdirs=True)
 assert(read(otto_subdir_to), "ottrath")
 
 remove_file_assert(otto_to, otto_subdir)
